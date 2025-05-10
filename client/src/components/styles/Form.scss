@@ -1,0 +1,120 @@
+@use "../../initial" as *;
+
+.journal {
+    // THE ENTIRE SECTION
+    &__form-box {
+        color: var(--white);
+        padding-bottom: 2rem;
+    }
+
+    // FORM TAG
+    &__form {
+        display: flex;
+        flex-direction: column;
+        row-gap: 5rem;
+
+        input,
+        textarea {
+            transition: box-shadow 0.3s;
+        }
+
+        @media (max-width: #{$md3}px) {
+            row-gap: 3rem;
+        }
+    }
+
+    // 1 ROW
+    &__form-row {
+        display: flex;
+        column-gap: 5rem;
+        align-items: center;
+
+        &:nth-child(1) {
+            .journal__form-input-box:nth-child(1) {
+                flex: 0 1 25%;
+            }
+        }
+
+        @media (max-width: #{$md3}px) {
+            flex-direction: column;
+            row-gap: 3rem;
+        }
+    }
+
+    // FIELD INPUT BOX WITH INPUT & LABEL
+    &__form-input-box {
+        width: 100%;
+        position: relative;
+    }
+
+    // INPUT
+    &__form-input {
+        color: var(--white);
+        flex-grow: 1;
+        flex-shrink: 1;
+        width: 100%;
+        padding: 1.5rem;
+        border-width: 0.2rem;
+
+        &:focus + .journal__form-input-label {
+            font-size: 1.4rem;
+            top: -2rem;
+            left: 0;
+            opacity: 0.5;
+        }
+    }
+
+    // LABEL
+    &__form-input-label {
+        position: absolute;
+        top: 1.6rem;
+        left: 1.6rem;
+        transition: all 0.3s;
+    }
+
+    // TEXTAREA
+    &__form-textarea {
+        height: 47vh;
+        min-height: 5.2rem;
+    }
+
+    // BUTTONS CONTAINER
+    &__form-btns {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        column-gap: 3rem;
+
+        @media (max-width: #{$md3}px) {
+            margin-left: initial;
+            width: 100%;
+            flex-direction: column;
+            row-gap: 3rem;
+        }
+    }
+
+    // 1 BUTTON
+    &__form-btn {
+        padding: 1rem 1.5rem;
+        border-color: var(--accent);
+        color: var(--accent);
+
+        @media (max-width: #{$md3}px) {
+            width: 100%;
+            padding: 2rem 0;
+        }
+    }
+}
+
+// WHEN LABEL MOVED UP (ON FOCUS)
+.moved-up {
+    font-size: 1.4rem;
+    top: -2rem;
+    left: 0;
+    opacity: 0.5;
+}
+
+// DATE INPUT
+#form-input-date {
+    color: var(--white);
+}

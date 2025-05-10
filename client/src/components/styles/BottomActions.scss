@@ -1,0 +1,150 @@
+@use "../../initial" as *;
+
+.bottom-block {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+
+    @media (max-width: #{$md2}px) {
+        bottom: 0.5rem;
+        left: 0.5rem;
+    }
+
+    // ============================================================
+
+    // EVERYTHING EXCEPT DATE-TIME
+    .actions {
+        position: fixed;
+        bottom: 4rem;
+        color: var(--accent);
+
+        &:hover .actions-menu {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        // ============================================================
+
+        // BUTTON WITH ELLIPSIS ICON
+        &-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--accent);
+            cursor: pointer;
+            opacity: 0.5;
+
+            // ICON
+            svg {
+                width: 1.8rem;
+                path {
+                    fill: var(--bg);
+                }
+            }
+
+            &:hover {
+                opacity: 1;
+                box-shadow: 0 0 1px var(--accent);
+            }
+
+            @media (max-width: #{$md2}px) {
+                width: 4rem;
+                height: 4rem;
+            }
+        }
+
+        // ============================================================
+
+        // ACTIONS CONTAINER
+        &-menu {
+            position: absolute;
+            bottom: 99%;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            padding: 1rem;
+            transition: all 0.3s;
+            min-width: 12rem;
+            background-color: var(--bg);
+        }
+
+        // ============================================================
+
+        // 1 ACTION
+        &-action {
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            font-size: 1.4rem;
+            white-space: nowrap;
+
+            &:hover {
+                background-color: var(--accent);
+                color: var(--bg);
+            }
+
+            &:active {
+                opacity: 0.5;
+            }
+
+            @media (max-width: #{$md2}px) {
+                padding: 1.5rem;
+            }
+        }
+    }
+
+    // ============================================================
+
+    // DATE-TIME
+    .date-time {
+        opacity: 0.5;
+        transition: all 0.3s;
+        font-size: 1.4rem;
+        color: var(--accent);
+
+        &:hover {
+            opacity: 1;
+            font-size: 1.6rem;
+            cursor: none;
+        }
+
+        @media (max-width: #{$md2}px) {
+            background-color: var(--bg);
+            padding: 0.5rem;
+            opacity: 1;
+        }
+    }
+
+    // ============================================================
+
+    // TIME
+    .time {
+        span {
+            animation: blink 2s steps(1, start) infinite;
+        }
+
+        @media (max-width: #{$md2}px) {
+            opacity: 0.5;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}

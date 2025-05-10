@@ -1,7 +1,7 @@
 :root {
-    /* --accent: #32cd32; */
-    /* --accent: rgb(78, 156, 78); */
-    /* --accent: AntiqueWhite; */
+    // --accent: #32cd32;
+    // --accent: rgb(78, 156, 78);
+    // --accent: AntiqueWhite;
     --accent: green;
     --bg: #000;
     --white: #fff;
@@ -15,7 +15,7 @@
     padding: 0;
     margin: 0;
     border: 0;
-    line-height: 1;
+    // line-height: 1;
     box-sizing: border-box;
 }
 
@@ -37,37 +37,40 @@ select,
 textarea {
     cursor: pointer;
     background-color: transparent;
-    color: inherit;
+    color: var(--accent);
     font-family: inherit;
-    font-size: inherit;
     border: 1px solid var(--accent);
     outline: none;
-    transition: box-shadow 0.3s;
+    padding: 1rem;
+    font-size: inherit;
 }
 
 button {
-    border: none;
-    border-bottom: 1px solid var(--accent);
-    padding-bottom: 2px;
-}
-button:hover {
-    border-bottom: transparent;
-}
-button:active {
-    opacity: 0.5;
+    // border: none;
+    // border-bottom: 1px solid var(--accent);
+    // padding-bottom: 2px;
+    cursor: pointer;
+
+    &:hover {
+        // border-bottom: transparent;
+        background-color: var(--accent);
+        color: var(--bg);
+        box-shadow: 0 0 1rem var(--accent);
+    }
+
+    &:active {
+        box-shadow: 0 0 1px var(--accent);
+        opacity: 0.7;
+    }
 }
 
 input:focus,
 textarea:focus {
-    box-shadow: 0 0 10px var(--accent);
+    box-shadow: 0 0 2rem var(--accent);
 }
 
 textarea {
     resize: vertical;
-}
-
-button {
-    cursor: pointer;
 }
 
 input::placeholder,
@@ -80,14 +83,14 @@ textarea::placeholder {
 
 /*  ============================================================================================= */
 
-/* $minwidth: 320px; */
+$minwidth: 320px;
 
-/* $mw: 1170; // the width of the content, the container width */
+$mw: 1170; // the width of the content, the container width
 
-/* $md1: $mw + 12; // 1st breakpoint */
-/* $md2: 992.98; // for tablets, 1024х768px is a size of a little PC monitor or iPad */
-/* $md3: 767.98; // for large phones; less than 768px is the hamburger menu time */
-/* $md4: 479.98; // for small phones */
+$md1: $mw + 12; // 1st breakpoint
+$md2: 992.98; // for tablets, 1024х768px is a size of a little PC monitor or iPad
+$md3: 767.98; // for large phones; less than 768px is the hamburger menu time
+$md4: 479.98; // for small phones
 
 /*  ============================================================================================= */
 
@@ -96,7 +99,7 @@ textarea::placeholder {
     margin: 0 auto;
     width: 100%;
 
-    /* @media (max-width: 1182px) {
+    @media (max-width: 1182px) {
         max-width: 970px;
     }
 
@@ -107,7 +110,7 @@ textarea::placeholder {
     @media (max-width: 768px) {
         max-width: none;
         padding: 0 10px;
-    } */
+    }
 }
 
 /*  ============================================================================================= */

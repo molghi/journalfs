@@ -1,0 +1,45 @@
+@use "../../initial" as *;
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+
+    // ================================================
+    // H1
+    h1 {
+        opacity: 0.5;
+        color: var(--accent);
+        transition: all 0.3s;
+
+        &:hover {
+            opacity: 1;
+            cursor: none;
+        }
+
+        @media (max-width: #{$md4}px) {
+            font-size: 2.6rem;
+        }
+    }
+
+    // ================================================
+    // ACTION BTNS
+    &__nav {
+        display: flex;
+        align-items: center;
+    }
+
+    &__btn {
+        &.active {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+    }
+    // ================================================
+
+    @media (max-width: 650px) {
+        margin-bottom: 0.5rem;
+    }
+}

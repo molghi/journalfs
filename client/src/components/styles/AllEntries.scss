@@ -1,0 +1,17 @@
+@use "../../initial" as *;
+
+.all-entries {
+    &__box {
+        display: flex;
+        column-gap: 3rem;
+
+        @media (max-width: #{$md2}px) {
+            column-gap: 2rem;
+        }
+
+        @media (max-width: 650px) {
+            flex-direction: column;
+            row-gap: 2rem;
+        }
+    }
+}
