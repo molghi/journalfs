@@ -2,8 +2,11 @@ import "./styles/Form.scss";
 import { useState } from "react";
 import formatDate from "../utils/formatDate"; // function
 import FormField from "./FormField"; // component
+import { useContext } from "react";
+import MyContext from "../context/MyContext";
 
-const Form = ({ setErrorMsg }) => {
+const Form = () => {
+    const { setErrorMsg } = useContext(MyContext);
     const [date, setDate] = useState(formatDate(new Date()));
     const [keywords, setKeywords] = useState("");
     const [title, setTitle] = useState("");

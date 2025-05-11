@@ -1,6 +1,10 @@
 import "./styles/Header.scss";
+import { useContext } from "react";
+import MyContext from "../context/MyContext";
 
-const Header = ({ activeTab, setActiveTab }) => {
+const Header = () => {
+    const { activeTab, setActiveTab } = useContext(MyContext);
+
     const handleTabSwitch = (e) => {
         if (e.target.textContent === "Add New") setActiveTab(0);
         else if (e.target.textContent === "View All") setActiveTab(1);
