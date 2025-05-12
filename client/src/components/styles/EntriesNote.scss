@@ -1,1 +1,21 @@
 @use "../../initial" as *;
+
+// When edit mode
+.input-edit {
+    width: 100%;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+
+    &:active,
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.textarea-edit {
+    width: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+    resize: none;
+}

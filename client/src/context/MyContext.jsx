@@ -13,6 +13,9 @@ const ContextProvider = ({ children }) => {
     const [noteToScrollTo, setNoteToScrollTo] = useState("");
     const [filterKeyword, setFilterKeyword] = useState("");
 
+    // const baseUrl = process.env.REACT_APP_API_BASE_URL;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
     return (
         <MyContext.Provider
             value={{
@@ -34,6 +37,7 @@ const ContextProvider = ({ children }) => {
                 setFilterKeyword,
                 isFiltering,
                 setIsFiltering,
+                baseUrl,
             }}
         >
             {children}

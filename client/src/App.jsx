@@ -4,56 +4,104 @@ import Form from "./components/Form";
 import BottomActions from "./components/BottomActions";
 import Search from "./components/Search";
 import AllEntries from "./components/AllEntries";
-// import axios from "axios";
+import axios from "axios";
 import testData from "./test-data.json";
 import MyContext from "./context/MyContext";
+import { motion, AnimatePresence } from "framer-motion";
+// import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
+// import MainLayout from "./layouts/MainLayout";
 
 function App() {
-    const { notes, setNotes, activeTab, errorMsg } = useContext(MyContext);
+    const { notes, setNotes, activeTab, errorMsg, baseUrl } = useContext(MyContext);
 
     console.log(notes);
 
     useEffect(() => {
         if (activeTab === 1) setNotes(testData.slice(0, 5)); // 🔴 Remove slice here
-        // const getAllNotes = async () => {
-        //     try {
-        //         const response = await axios.get("/test-data.json");
-        //         console.log(response);
-        //     } catch (error) {
-        //         console.error(`Error getting notes:`, error);
-        //     }
-        // };
-        // getAllNotes();
+        const getAllNotes = async () => {
+            try {
+                const response = await axios.get(`${baseUrl}/notes`);
+                console.log(`getAllNotes response...`);
+                console.log(response);
+            } catch (error) {
+                console.error(`Error getting notes:`, error);
+            }
+        };
+        getAllNotes();
     }, [activeTab]);
+
+    // const router = createBrowserRouter(
+    //     createRoutesFromElements(
+    //         <Route path="/" element={<MainLayout />}>
+    //             <Route
+    //                 path="/"
+    //                 element={
+    //                     // <AnimatePresence mode="wait">
+    //                     //     <motion.div
+    //                     //         key="form"
+    //                     //         initial={{ opacity: 0 }}
+    //                     //         animate={{ opacity: 1 }}
+    //                     //         exit={{ opacity: 0 }}
+    //                     //         transition={{ duration: 0.1 }}
+    //                     //     >
+    //                     <Form />
+    //                     //     </motion.div>
+    //                     // </AnimatePresence>
+    //                 }
+    //             />
+    //             <Route
+    //                 path="/view-all"
+    //                 element={
+    //                     // <AnimatePresence mode="wait">
+    //                     //     <motion.div
+    //                     //         key="view-all"
+    //                     //         initial={{ opacity: 0 }}
+    //                     //         animate={{ opacity: 1 }}
+    //                     //         exit={{ opacity: 0 }}
+    //                     //         transition={{ duration: 0.1 }}
+    //                     //     >
+    //                     <>
+    //                         {notes && notes.length > 1 && <Search />}
+    //                         <AllEntries />
+    //                     </>
+    //                     //     </motion.div>
+    //                     // </AnimatePresence>
+    //                 }
+    //             />
+    //         </Route>
+    //     )
+    // );
+
+    // return <RouterProvider router={router} />;
 
     return (
         <>
             <div className="container">
                 <Header />
 
-                {activeTab === 0 && <Form />}
+                <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 0, 1] }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                        opacity: {
+                            duration: 1,
+                            times: [0, 0.5, 1],
+                        },
+                    }}
+                >
+                    {activeTab === 0 ? (
+                        <Form />
+                    ) : (
+                        <>
+                            {notes && notes.length > 1 && <Search />}
+                            <AllEntries />
+                        </>
+                    )}
+                </motion.div>
 
-                {activeTab === 1 && (
-                    <>
-                        {notes && notes.length > 1 && <Search />}
-                        <AllEntries />
-                    </>
-                )}
-
-                {errorMsg && (
-                    <div
-                        style={{
-                            border: "1px solid red",
-                            color: "red",
-                            padding: "15px",
-                            backgroundColor: "black",
-                            position: "fixed",
-                            bottom: "15px",
-                        }}
-                    >
-                        Error: {errorMsg}
-                    </div>
-                )}
+                {errorMsg && <div className="error">Error: {errorMsg}</div>}
 
                 <BottomActions />
             </div>
@@ -62,3 +110,16 @@ function App() {
 }
 
 export default App;
+
+/* 
+
+{activeTab === 0 && <Form />}
+
+{activeTab === 1 && (
+    <>
+        {notes && notes.length > 1 && <Search />}
+        <AllEntries />
+    </>
+)} 
+
+*/

@@ -4,15 +4,16 @@ import formatDate from "../utils/formatDate"; // function
 import FormField from "./FormField"; // component
 import { useContext } from "react";
 import MyContext from "../context/MyContext";
+import axios from "axios";
 
 const Form = () => {
-    const { setErrorMsg } = useContext(MyContext);
+    const { setErrorMsg, baseUrl } = useContext(MyContext);
     const [date, setDate] = useState(formatDate(new Date()));
     const [keywords, setKeywords] = useState("");
     const [title, setTitle] = useState("");
     const [note, setNote] = useState("");
 
-    const submitForm = (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
         // Some front-end validation
         if (!/^(0?[1-9]|[12][0-9]|3[01])[/.](0?[1-9]|1[0-2])[/.](10|[1-9][0-9])$/.test(date)) {
@@ -27,6 +28,9 @@ const Form = () => {
         // note can have all sorts of characters
         setErrorMsg("");
         console.log(`Form submit with:`, date, keywords, title, note);
+        const response = await axios.post(`${baseUrl}/notes`, { date, keywords, title, note });
+        console.log(`submitForm response...`);
+        console.log(response);
     };
 
     return (

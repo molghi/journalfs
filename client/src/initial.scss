@@ -142,3 +142,14 @@ textarea::-webkit-scrollbar-track,
 div::-webkit-scrollbar-track {
     background: black; /* Track colour */
 }
+
+/*  ============================================================================================= */
+
+.error {
+    border: 1px solid red;
+    color: red;
+    padding: 15px;
+    background-color: black;
+    position: fixed;
+    bottom: 15px;
+}

@@ -1,6 +1,7 @@
 import "./styles/Header.scss";
 import { useContext } from "react";
 import MyContext from "../context/MyContext";
+// import { Link } from "react-router-dom";
 
 const Header = () => {
     const { activeTab, setActiveTab } = useContext(MyContext);

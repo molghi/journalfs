@@ -53,7 +53,7 @@ const FormField = ({ fieldType, type, value, valueSetter }) => {
                     autoComplete="off"
                     value={value}
                     onChange={valueSetter}
-                    required
+                    required={type === "keywords" ? false : true}
                     title={
                         type === "date"
                             ? `Today is ${formatDate(new Date())}`

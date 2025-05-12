@@ -1,14 +1,15 @@
 import "./styles/EntriesNotes.scss";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import MyContext from "../context/MyContext";
 import EntriesNote from "./EntriesNote";
 
 // This is where the note entries are
 const EntriesNotes = () => {
     const { notes } = useContext(MyContext);
+    const scrollBoxEl = useRef();
 
     return (
-        <div className="all-entries__notes">
+        <div ref={scrollBoxEl} className="all-entries__notes">
             {notes &&
                 notes.length > 0 &&
                 notes.map((noteObj) => (
@@ -19,6 +20,7 @@ const EntriesNotes = () => {
                         note={noteObj.note}
                         keywords={noteObj.keywords}
                         date={noteObj.dateInput}
+                        scrollBoxRef={scrollBoxEl}
                     />
                 ))}
         </div>
