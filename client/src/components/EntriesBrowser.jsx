@@ -14,6 +14,7 @@ const EntriesBrowser = ({ notesMatchSearch }) => {
         return `Title: ${title}${noteObj.title.length > 50 ? "..." : ""}\nNote: ${note}${noteObj.note.length > 50 ? "..." : ""}`;
     };
 
+    // Scroll to note when click on its miniature
     const scrollToNote = (e) => {
         setNoteToScrollTo(+e.target.dataset.id);
     };
@@ -24,11 +25,11 @@ const EntriesBrowser = ({ notesMatchSearch }) => {
                 notes.length > 0 &&
                 notes.map((noteObj) => (
                     <EntriesMiniature
-                        key={noteObj.id}
+                        key={noteObj.id || noteObj.noteId}
                         title={getTitleAttr(noteObj)}
                         note={noteObj.note}
                         keywords={noteObj.keywords}
-                        id={noteObj.id}
+                        id={noteObj.id || noteObj.noteId}
                         name={noteObj.title}
                         onClick={scrollToNote}
                     />

@@ -14,13 +14,14 @@ const EntriesNotes = () => {
                 notes.length > 0 &&
                 notes.map((noteObj) => (
                     <EntriesNote
-                        key={noteObj.id}
-                        id={noteObj.id}
+                        key={noteObj.id || noteObj.noteId}
+                        id={noteObj.id || noteObj.noteId}
                         title={noteObj.title}
                         note={noteObj.note}
                         keywords={noteObj.keywords}
-                        date={noteObj.dateInput}
+                        date={noteObj.dateInput || noteObj.dateFromInput}
                         scrollBoxRef={scrollBoxEl}
+                        dateModified={noteObj.dateModified}
                     />
                 ))}
         </div>

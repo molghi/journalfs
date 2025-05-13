@@ -10,10 +10,11 @@ import {
     saveTitle,
     editNote,
     saveNote,
-    resolveNoteLineBreaks,
+    formatNote,
 } from "../utils/EntriesNoteFunctions";
+import { decode } from "he"; // Remove HTML entities when displaying
 
-const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
+const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModified }) => {
     const {
         searchTerm,
         isSearching,
@@ -24,6 +25,9 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
         isFiltering,
         setIsFiltering,
         setErrorMsg,
+        baseUrl,
+        setNotes,
+        localStorageKey,
     } = useContext(MyContext);
 
     const theElement = useRef();
@@ -55,6 +59,65 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
             : keywords.join(" ").toLowerCase().includes(filterKeyword.toLowerCase());
 
     if (isFiltering && !keywordsHaveFilterTerm) viewFlag = false;
+
+    // ============================================================================================================
+
+    // Format keywords
+
+    const formatKeywords = (keywordsString) => {
+        if (typeof keywords === "string") {
+            // If string has commas
+            if (keywords.includes(",")) {
+                return keywords.split(",").map((word, index) => (
+                    <button
+                        key={index}
+                        className="all-entries__note-keyword"
+                        title={`Filter by "${word.trim()}"`}
+                        onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+                    >
+                        {word.trim()}
+                    </button>
+                ));
+            }
+            // If string has no commas
+            return (
+                <button
+                    className="all-entries__note-keyword"
+                    title={`Filter by "${keywords}"`}
+                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+                >
+                    {keywords}
+                </button>
+            );
+        } else {
+            // keywords aren't type string
+            return keywords.map((word, index) => (
+                <button
+                    key={index}
+                    className="all-entries__note-keyword"
+                    title={`Filter by "${word}"`}
+                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+                >
+                    {word}
+                </button>
+            ));
+        }
+    };
+
+    // ============================================================================================================
+
+    // Replace slash entities with actual slashes
+
+    const prettifyDate = (value) => (!value.includes("&#x2F;") ? value : value.replaceAll("&#x2F;", "/"));
+
+    // ============================================================================================================
+
+    // Convert "2025-05-13T03:18:55.702+00:00" to "13/5/25"
+
+    const formatDate = (value) => {
+        const date = new Date(value);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`;
+    };
 
     // ============================================================================================================
 
@@ -94,10 +157,10 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
                             className="all-entries__note-title"
                             title="Click to edit, click out to save"
                             onClick={() => editTitle(title, setEditingTitle)}
-                            onBlur={() => saveTitle(editTitleValue, setEditingTitle)}
+                            onBlur={() => saveTitle(editTitleValue, setEditingTitle, baseUrl, id, setNotes, localStorageKey)}
                         >
                             {!editingTitle ? (
-                                editTitleValue
+                                decode(editTitleValue)
                             ) : (
                                 <input
                                     type="text"
@@ -115,10 +178,10 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
                             className="all-entries__note-text"
                             title="Click to edit, click out to save"
                             onClick={() => editNote(note, setEditingNote, theElement, scrollBoxRef)}
-                            onBlur={() => saveNote(editNoteValue, setEditingNote)}
+                            onBlur={() => saveNote(editNoteValue, setEditingNote, baseUrl, id, setNotes, localStorageKey)}
                         >
                             {!editingNote ? (
-                                resolveNoteLineBreaks(editNoteValue)
+                                formatNote(decode(editNoteValue))
                             ) : (
                                 <textarea
                                     className="input-edit textarea-edit"
@@ -133,37 +196,30 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef }) => {
                     <div className="all-entries__note-row">
                         {/* KEYWORDS */}
                         <div className="all-entries__note-keywords">
-                            <span title="Click to edit keywords" onClick={() => editKeywords(keywords, setErrorMsg)}>
-                                Keywords:{" "}
-                            </span>{" "}
-                            {typeof keywords === "string" ? (
-                                <button
-                                    className="all-entries__note-keyword"
-                                    title={`Filter by "${keywords}"`}
-                                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
-                                >
-                                    {keywords}
-                                </button>
-                            ) : (
-                                keywords.map((word, index) => (
-                                    <button
-                                        key={index}
-                                        className="all-entries__note-keyword"
-                                        title={`Filter by "${word}"`}
-                                        onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
-                                    >
-                                        {word}
-                                    </button>
-                                ))
-                            )}
+                            <span
+                                title="Click to edit keywords"
+                                onClick={() => editKeywords(keywords, setErrorMsg, baseUrl, id, setNotes, localStorageKey)}
+                            >
+                                Keywords:
+                            </span>
+                            {formatKeywords(keywords)}
                         </div>
                         {/* DATE */}
-                        <div className="all-entries__note-date" title={`Created on ${date}`}>
-                            Date: {date}
+                        <div
+                            className="all-entries__note-date"
+                            title={`Created on ${prettifyDate(date)}${
+                                dateModified ? ` - Modified on ${formatDate(dateModified)}` : ""
+                            }`}
+                        >
+                            Date: {prettifyDate(date)}
                         </div>
                     </div>
                     {/* DELETE BUTTON */}
-                    <div className="all-entries__note-button" title="Delete Note" onClick={() => deleteNote(title)}>
+                    <div
+                        className="all-entries__note-button"
+                        title="Delete Note"
+                        onClick={() => deleteNote(title, id, baseUrl, setNotes, localStorageKey)}
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                             &lt;
                             <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"></path>

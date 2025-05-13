@@ -12,9 +12,12 @@ const ContextProvider = ({ children }) => {
     const [isFiltering, setIsFiltering] = useState(false);
     const [noteToScrollTo, setNoteToScrollTo] = useState("");
     const [filterKeyword, setFilterKeyword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     // const baseUrl = process.env.REACT_APP_API_BASE_URL;
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+    const localStorageKey = "journal_db";
 
     return (
         <MyContext.Provider
@@ -37,6 +40,9 @@ const ContextProvider = ({ children }) => {
                 setFilterKeyword,
                 isFiltering,
                 setIsFiltering,
+                isLoading,
+                setIsLoading,
+                localStorageKey,
                 baseUrl,
             }}
         >

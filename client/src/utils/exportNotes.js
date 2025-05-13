@@ -1,17 +1,23 @@
-function exportNotes() {
+import axios from "axios";
+
+async function exportNotes(baseUrl, notes) {
     console.log("exportNotes");
 
-    let answer = prompt(`Choose the format: TXT or JSON?
-    JSON: bad for reading, good for importing
-    TXT: good for reading, bad for importing`); // prompt
+    await axios.post(`${baseUrl}/export`, { notes });
 
-    if (!answer) return;
+    return;
 
-    answer = answer.toLowerCase().trim();
+    // let answer = prompt(`Choose the format: TXT or JSON?
+    // JSON: bad for reading, good for importing
+    // TXT: good for reading, bad for importing`); // prompt
 
-    if (answer !== "txt" && answer !== "json") return;
+    // if (!answer) return;
 
-    answer === "json" ? exportNotesJson() : exportNotesTxt(); // exporting as JSON or TXT
+    // answer = answer.toLowerCase().trim();
+
+    // if (answer !== "txt" && answer !== "json") return;
+
+    // answer === "json" ? exportNotesJson() : exportNotesTxt(); // exporting as JSON or TXT
 }
 
 // ================================================================================================

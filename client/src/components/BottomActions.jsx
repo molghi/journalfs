@@ -7,7 +7,7 @@ import { importNotes, processInput } from "../utils/importNotes";
 import MyContext from "../context/MyContext";
 
 const BottomActions = () => {
-    const { interfaceColor, setInterfaceColor, setErrorMsg } = useContext(MyContext);
+    const { interfaceColor, setInterfaceColor, setErrorMsg, baseUrl, notes } = useContext(MyContext);
 
     const [nowTime, setNowTime] = useState(new Date());
     const timer = useRef();
@@ -34,7 +34,7 @@ const BottomActions = () => {
 
     const handleActionClick = (e) => {
         if (e.target.textContent === "Change color") changeColor(setInterfaceColor); // Change the accent color of the interface
-        if (e.target.textContent === "Export notes") exportNotes(); // Export as JSON or TXT
+        if (e.target.textContent === "Export notes") exportNotes(baseUrl, notes); // Export as JSON or TXT
         if (e.target.textContent === "Import notes") importNotes(fileUploadInput); // Prompt and open the window to choose the file
     };
 

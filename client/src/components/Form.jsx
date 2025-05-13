@@ -5,32 +5,43 @@ import FormField from "./FormField"; // component
 import { useContext } from "react";
 import MyContext from "../context/MyContext";
 import axios from "axios";
+import { saveNotesToLS } from "../utils/localStorageFunctions";
 
 const Form = () => {
-    const { setErrorMsg, baseUrl } = useContext(MyContext);
+    const { setErrorMsg, baseUrl, setNotes, localStorageKey, notes } = useContext(MyContext);
     const [date, setDate] = useState(formatDate(new Date()));
     const [keywords, setKeywords] = useState("");
     const [title, setTitle] = useState("");
     const [note, setNote] = useState("");
 
     const submitForm = async (e) => {
-        e.preventDefault();
-        // Some front-end validation
-        if (!/^(0?[1-9]|[12][0-9]|3[01])[/.](0?[1-9]|1[0-2])[/.](10|[1-9][0-9])$/.test(date)) {
-            return setErrorMsg("Incorrect date format. Correct: 28/12/25 or 28.12.25 (day, month, year)"); // validate date input
+        try {
+            e.preventDefault();
+            // Some front-end validation
+            if (!/^(0?[1-9]|[12][0-9]|3[01])[/.](0?[1-9]|1[0-2])[/.](10|[1-9][0-9])$/.test(date)) {
+                return setErrorMsg("Incorrect date format. Correct: 28/12/25 or 28.12.25 (day, month, year)"); // validate date input
+            }
+            if (!/^[a-zA-Z0-9\-.,\s]*$/.test(keywords)) {
+                return setErrorMsg(
+                    "Keywords must contain only the specified characters: alphanumerics, hyphens, dots, commas, and whitespace." // validate keywords input
+                );
+            }
+            // Title input can be empty, in this case title will be 'Journal Entry'
+            // Note can have all sorts of characters
+            setErrorMsg("");
+            const response = await axios.post(`${baseUrl}/notes`, { date, keywords, title, note });
+            if (response.status === 200) {
+                setNotes((prev) => [...prev, response.data.message]);
+                saveNotesToLS(localStorageKey, notes);
+                setDate(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear().toString().slice(-2)}`);
+                setKeywords("");
+                setTitle("");
+                setNote("");
+                console.log(`Add one: Response 200 ✅. Saved to LS. Fields emptied.`);
+            }
+        } catch (error) {
+            console.error(`💥 Error adding note:`, error);
         }
-        if (!/^[a-zA-Z0-9\-.,\s]*$/.test(keywords)) {
-            return setErrorMsg(
-                "Keywords must contain only the specified characters: alphanumerics, hyphens, dots, commas, and whitespace." // validate keywords input
-            );
-        }
-        // title input can be empty, in this case title will be 'Journal Entry'
-        // note can have all sorts of characters
-        setErrorMsg("");
-        console.log(`Form submit with:`, date, keywords, title, note);
-        const response = await axios.post(`${baseUrl}/notes`, { date, keywords, title, note });
-        console.log(`submitForm response...`);
-        console.log(response);
     };
 
     return (
