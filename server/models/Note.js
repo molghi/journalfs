@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 // Establish schema
 const noteSchema = new mongoose.Schema({
-    dateFromInput: { type: String, required: true }, // =dateInput
+    dateInput: { type: String, required: true }, // =dateInput
 
     keywords: { type: String }, // =keywords
 
@@ -10,13 +10,15 @@ const noteSchema = new mongoose.Schema({
 
     note: { type: String, required: true }, // =note
 
-    noteId: { type: Number, default: Date.now }, // =id
+    id: { type: Number, default: Date.now }, // =id
 
     time: { type: Date, default: new Date().toISOString() }, // =time
 
     dateCreated: { type: Date, default: Date.now }, // =dateCreated
 
     dateModified: { type: Date, default: null }, // dateModified
+
+    userIdentifier: { type: String, required: true }, // way to identify notes belonging to a certain user
 });
 
 // Instantiate model from schema and export it

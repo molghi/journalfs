@@ -4,27 +4,41 @@ import Form from "./components/Form";
 import BottomActions from "./components/BottomActions";
 import Search from "./components/Search";
 import AllEntries from "./components/AllEntries";
-import axios from "axios";
-import testData from "./test-data.json";
 import MyContext from "./context/MyContext";
-import { motion, AnimatePresence } from "framer-motion";
+// import testData from "./test-data.json";
 import { saveNotesToLS } from "./utils/localStorageFunctions";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { v4 as uuidv4 } from "uuid";
 // import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
 // import MainLayout from "./layouts/MainLayout";
 
 function App() {
-    const { notes, setNotes, activeTab, errorMsg, isLoading, setIsLoading, baseUrl, localStorageKey } = useContext(MyContext);
+    const {
+        notes,
+        setNotes,
+        activeTab,
+        errorMsg,
+        setErrorMsg,
+        isLoading,
+        setIsLoading,
+        baseUrl,
+        localStorageKey,
+        localStorageIDKey,
+        notificationMsg,
+        setNotificationMsg,
+    } = useContext(MyContext);
 
-    console.log(notes);
+    // console.log(notes);
 
     useEffect(() => {
-        // if (activeTab === 1) setNotes(testData.slice(0, 5));
-
+        if (activeTab === 0) return;
         // Get all notes from db
         const getAllNotes = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${baseUrl}/notes`);
+                const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+                const response = await axios.get(`${baseUrl}/notes/${userIdentifierInLS}`);
                 setIsLoading(false);
                 if (response.status === 200) {
                     setNotes(response.data.message);
@@ -38,49 +52,25 @@ function App() {
         getAllNotes();
     }, [activeTab]);
 
-    // const router = createBrowserRouter(
-    //     createRoutesFromElements(
-    //         <Route path="/" element={<MainLayout />}>
-    //             <Route
-    //                 path="/"
-    //                 element={
-    //                     // <AnimatePresence mode="wait">
-    //                     //     <motion.div
-    //                     //         key="form"
-    //                     //         initial={{ opacity: 0 }}
-    //                     //         animate={{ opacity: 1 }}
-    //                     //         exit={{ opacity: 0 }}
-    //                     //         transition={{ duration: 0.1 }}
-    //                     //     >
-    //                     <Form />
-    //                     //     </motion.div>
-    //                     // </AnimatePresence>
-    //                 }
-    //             />
-    //             <Route
-    //                 path="/view-all"
-    //                 element={
-    //                     // <AnimatePresence mode="wait">
-    //                     //     <motion.div
-    //                     //         key="view-all"
-    //                     //         initial={{ opacity: 0 }}
-    //                     //         animate={{ opacity: 1 }}
-    //                     //         exit={{ opacity: 0 }}
-    //                     //         transition={{ duration: 0.1 }}
-    //                     //     >
-    //                     <>
-    //                         {notes && notes.length > 1 && <Search />}
-    //                         <AllEntries />
-    //                     </>
-    //                     //     </motion.div>
-    //                     // </AnimatePresence>
-    //                 }
-    //             />
-    //         </Route>
-    //     )
-    // );
+    useEffect(() => {
+        // Hide error/notification msg after some time
+        if (errorMsg) {
+            const timer = setTimeout(() => setErrorMsg(""), 10000); // after 10 secs
+            return () => clearTimeout(timer);
+        }
+        if (notificationMsg) {
+            const timer = setTimeout(() => setNotificationMsg(""), 5000); // after 5 secs
+            return () => clearTimeout(timer);
+        }
+    }, [errorMsg, notificationMsg]);
 
-    // return <RouterProvider router={router} />;
+    useEffect(() => {
+        // Create some user identifier
+        const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+        console.log(`User Identifier in LS: ${userIdentifierInLS ? "exists" : "none"}`);
+        if (userIdentifierInLS) return; // if exists, do not generate again
+        localStorage.setItem(localStorageIDKey, uuidv4());
+    }, []);
 
     return (
         <>
@@ -109,7 +99,9 @@ function App() {
                     )}
                 </motion.div>
 
-                {errorMsg && <div className="error">Error: {errorMsg}</div>}
+                {errorMsg && <div className="message error">Error: {errorMsg}</div>}
+
+                {notificationMsg && <div className="message success">{notificationMsg}</div>}
 
                 <BottomActions />
             </div>
@@ -118,16 +110,3 @@ function App() {
 }
 
 export default App;
-
-/* 
-
-{activeTab === 0 && <Form />}
-
-{activeTab === 1 && (
-    <>
-        {notes && notes.length > 1 && <Search />}
-        <AllEntries />
-    </>
-)} 
-
-*/

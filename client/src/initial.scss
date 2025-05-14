@@ -145,11 +145,31 @@ div::-webkit-scrollbar-track {
 
 /*  ============================================================================================= */
 
+.message {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 500px;
+    z-index: 10;
+    padding: 15px;
+    background-color: black;
+}
+
 .error {
     border: 1px solid red;
     color: red;
-    padding: 15px;
-    background-color: black;
-    position: fixed;
-    bottom: 15px;
+    box-shadow: 0 0 10px red;
+}
+
+.success {
+    border: 1px solid lime;
+    color: lime;
+    box-shadow: 0 0 10px lime;
+}
+
+/*  ============================================================================================= */
+
+.hidden {
+    display: none;
 }

@@ -8,10 +8,11 @@ import MyContext from "../context/MyContext";
 
 const BottomActions = () => {
     const { interfaceColor, setInterfaceColor, setErrorMsg, baseUrl, notes } = useContext(MyContext);
-
     const [nowTime, setNowTime] = useState(new Date());
     const timer = useRef();
     const fileUploadInput = useRef();
+
+    // ========================================================================
 
     useEffect(() => {
         // Start up timer, refresh every minute
@@ -32,13 +33,23 @@ const BottomActions = () => {
         }
     }, [interfaceColor]);
 
+    // ========================================================================
+
     const handleActionClick = (e) => {
         if (e.target.textContent === "Change color") changeColor(setInterfaceColor); // Change the accent color of the interface
         if (e.target.textContent === "Export notes") exportNotes(baseUrl, notes); // Export as JSON or TXT
         if (e.target.textContent === "Import notes") importNotes(fileUploadInput); // Prompt and open the window to choose the file
     };
 
-    const handleFileUpload = (e) => processInput(e, setErrorMsg); // Upon file upload
+    const handleFileUpload = (e) => processInput(e, setErrorMsg, notes); // Upon file upload
+
+    const actions = [
+        { visibleName: "Change color", titleAttr: "Change the accent color of the interface" },
+        { visibleName: "Export notes", titleAttr: "Export as JSON or TXT" },
+        { visibleName: "Import notes", titleAttr: "Import as JSON" },
+    ];
+
+    // ========================================================================
 
     return (
         <div className="bottom-block">
@@ -51,23 +62,11 @@ const BottomActions = () => {
                 </div>
                 {/* ACTIONS MENU */}
                 <div className="actions-menu">
-                    <div
-                        onClick={handleActionClick}
-                        className="actions-action actions-action--color"
-                        title="Change the accent color of the interface"
-                    >
-                        Change color
-                    </div>
-                    <div
-                        onClick={handleActionClick}
-                        className="actions-action actions-action--export"
-                        title="Export as JSON or TXT"
-                    >
-                        Export notes
-                    </div>
-                    <div onClick={handleActionClick} className="actions-action actions-action--import" title="Import as JSON">
-                        Import notes
-                    </div>
+                    {actions.map((action, i) => (
+                        <div key={i} onClick={handleActionClick} className="actions-action" title={action.titleAttr}>
+                            {action.visibleName}
+                        </div>
+                    ))}
                     <input className="importer" type="file" ref={fileUploadInput} onChange={handleFileUpload} />
                 </div>
             </div>

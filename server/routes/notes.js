@@ -11,8 +11,8 @@ router.post("/", createNewNote);
 // ================================================================================================
 
 // Route    GET  /notes
-// Action   Read All Notes
-router.get("/", getAllNotes);
+// Action   Read All Notes Belonging To Some User
+router.get("/:userIdentifier", getAllNotes);
 
 // ================================================================================================
 

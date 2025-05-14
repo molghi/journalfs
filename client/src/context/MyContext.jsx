@@ -6,6 +6,7 @@ const ContextProvider = ({ children }) => {
     const [notes, setNotes] = useState([]);
     const [activeTab, setActiveTab] = useState(1); // 0 for Add New, 1 for View All
     const [errorMsg, setErrorMsg] = useState("");
+    const [notificationMsg, setNotificationMsg] = useState("");
     const [interfaceColor, setInterfaceColor] = useState("green");
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearching, setIsSearching] = useState(false);
@@ -18,6 +19,7 @@ const ContextProvider = ({ children }) => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     const localStorageKey = "journal_db";
+    const localStorageIDKey = "journal_identity";
 
     return (
         <MyContext.Provider
@@ -43,7 +45,10 @@ const ContextProvider = ({ children }) => {
                 isLoading,
                 setIsLoading,
                 localStorageKey,
+                localStorageIDKey,
                 baseUrl,
+                notificationMsg,
+                setNotificationMsg,
             }}
         >
             {children}

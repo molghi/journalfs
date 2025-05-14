@@ -28,6 +28,8 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
         baseUrl,
         setNotes,
         localStorageKey,
+        localStorageIDKey,
+        notes,
     } = useContext(MyContext);
 
     const theElement = useRef();
@@ -37,6 +39,9 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
     const [editingNote, setEditingNote] = useState(false);
     const [editTitleValue, setEditTitleValue] = useState(title);
     const [editNoteValue, setEditNoteValue] = useState(note.replaceAll("<br>", "\n"));
+    const [prevEditTitleValue, setPrevEditTitleValue] = useState("");
+    const [prevEditNoteValue, setPrevEditNoteValue] = useState("");
+    const isLast = notes[notes.length - 1].id === id;
 
     // ============================================================================================================
 
@@ -156,8 +161,19 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                         <div
                             className="all-entries__note-title"
                             title="Click to edit, click out to save"
-                            onClick={() => editTitle(title, setEditingTitle)}
-                            onBlur={() => saveTitle(editTitleValue, setEditingTitle, baseUrl, id, setNotes, localStorageKey)}
+                            onClick={() => editTitle(editTitleValue, setEditingTitle, setPrevEditTitleValue)}
+                            onBlur={() =>
+                                saveTitle(
+                                    editTitleValue,
+                                    setEditingTitle,
+                                    baseUrl,
+                                    id,
+                                    setNotes,
+                                    localStorageKey,
+                                    localStorageIDKey,
+                                    prevEditTitleValue
+                                )
+                            }
                         >
                             {!editingTitle ? (
                                 decode(editTitleValue)
@@ -177,8 +193,21 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                         <div
                             className="all-entries__note-text"
                             title="Click to edit, click out to save"
-                            onClick={() => editNote(note, setEditingNote, theElement, scrollBoxRef)}
-                            onBlur={() => saveNote(editNoteValue, setEditingNote, baseUrl, id, setNotes, localStorageKey)}
+                            onClick={() =>
+                                editNote(editNoteValue, setEditingNote, theElement, scrollBoxRef, isLast, setPrevEditNoteValue)
+                            }
+                            onBlur={() =>
+                                saveNote(
+                                    editNoteValue,
+                                    setEditingNote,
+                                    baseUrl,
+                                    id,
+                                    setNotes,
+                                    localStorageKey,
+                                    localStorageIDKey,
+                                    prevEditNoteValue
+                                )
+                            }
                         >
                             {!editingNote ? (
                                 formatNote(decode(editNoteValue))
@@ -186,7 +215,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                                 <textarea
                                     className="input-edit textarea-edit"
                                     ref={noteInEdit}
-                                    value={editNoteValue}
+                                    value={decode(editNoteValue)}
                                     onChange={(e) => setEditNoteValue(e.target.value)}
                                     style={{ height: window.innerHeight * 0.63 }}
                                 ></textarea>
@@ -198,7 +227,9 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                         <div className="all-entries__note-keywords">
                             <span
                                 title="Click to edit keywords"
-                                onClick={() => editKeywords(keywords, setErrorMsg, baseUrl, id, setNotes, localStorageKey)}
+                                onClick={() =>
+                                    editKeywords(keywords, setErrorMsg, baseUrl, id, setNotes, localStorageKey, localStorageIDKey)
+                                }
                             >
                                 Keywords:
                             </span>
@@ -218,7 +249,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                     <div
                         className="all-entries__note-button"
                         title="Delete Note"
-                        onClick={() => deleteNote(title, id, baseUrl, setNotes, localStorageKey)}
+                        onClick={() => deleteNote(title, id, baseUrl, setNotes, localStorageKey, localStorageIDKey)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                             &lt;

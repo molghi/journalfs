@@ -8,7 +8,8 @@ import axios from "axios";
 import { saveNotesToLS } from "../utils/localStorageFunctions";
 
 const Form = () => {
-    const { setErrorMsg, baseUrl, setNotes, localStorageKey, notes } = useContext(MyContext);
+    const { setErrorMsg, baseUrl, setNotes, localStorageKey, notes, localStorageIDKey, setNotificationMsg } =
+        useContext(MyContext);
     const [date, setDate] = useState(formatDate(new Date()));
     const [keywords, setKeywords] = useState("");
     const [title, setTitle] = useState("");
@@ -29,7 +30,14 @@ const Form = () => {
             // Title input can be empty, in this case title will be 'Journal Entry'
             // Note can have all sorts of characters
             setErrorMsg("");
-            const response = await axios.post(`${baseUrl}/notes`, { date, keywords, title, note });
+            const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+            const response = await axios.post(`${baseUrl}/notes`, {
+                date,
+                keywords,
+                title,
+                note,
+                userIdentifier: userIdentifierInLS,
+            });
             if (response.status === 200) {
                 setNotes((prev) => [...prev, response.data.message]);
                 saveNotesToLS(localStorageKey, notes);
@@ -37,6 +45,7 @@ const Form = () => {
                 setKeywords("");
                 setTitle("");
                 setNote("");
+                setNotificationMsg("Note submitted!");
                 console.log(`Add one: Response 200 ✅. Saved to LS. Fields emptied.`);
             }
         } catch (error) {

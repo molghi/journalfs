@@ -1,8 +1,6 @@
 // Prompt and open the window to choose the file
 function importNotes(fileUploadInput) {
-    console.log("importNotes");
-
-    alert(`NOTE:\nYou can import only JSON and it must be formatted exactly the same as the one you can export.`);
+    alert(`NOTE:\n\nYou can import only JSON and it must be formatted exactly the same as what you can export.`);
 
     fileUploadInput.current.click(); // Click the file import btn
 
@@ -12,7 +10,7 @@ function importNotes(fileUploadInput) {
 // ================================================================================================
 
 // Upon file upload
-function processInput(event, setErrorMsg) {
+function processInput(event, setErrorMsg, notes) {
     const file = event.target.files[0]; // Get the file
     if (!file) return; // Ensure there's a file selected
 
@@ -20,18 +18,23 @@ function processInput(event, setErrorMsg) {
 
     reader.onload = (e) => {
         try {
-            const jsonData = JSON.parse(e.target.result); // Parse the JSON content
+            // Parse the JSON content
+            const jsonData = JSON.parse(e.target.result);
+            // Verify it has all needed fields; it returns boolean
             const isValidInput = checkValidInput(jsonData);
 
             if (!isValidInput) {
                 setErrorMsg(`Invalid JSON! Check the formatting: you can import JSON formatted the same as what you can export.`);
                 return console.error(
-                    `Invalid JSON!\nPerhaps the formatting of the file was wrong...\nYou can import JSON formatted the same as what you can export.`
+                    `Invalid JSON!\nPerhaps the formatting of the file was wrong.\nYou can import JSON formatted the same as what you can export.`
                 );
             }
 
-            return console.log(`importing not configured yet --> here you must push the imported to your app`);
-            // addFromImported(jsonData); // Add to the state and pushing to LS
+            // Add to the state and push to LS
+            addFromImported(jsonData, notes);
+
+            return console.log(`importing not finished yet`);
+
             // Visual.showMessage("success", `Import successful! Notes added: ${jsonData.length}`, undefined, "bottom");
 
             // if (!Visual.allEntriesSection.classList.contains("hidden")) {
@@ -49,7 +52,7 @@ function processInput(event, setErrorMsg) {
             //     if (jsonData.length > 1) document.querySelector(".search").classList.remove("hidden");
             // }
         } catch (err) {
-            console.error("Invalid input file", err); // Error handling
+            console.error("Invalid input file", err);
             setErrorMsg(`Invalid input file! You can import only JSON and it must be formatted the same as what you can export.`);
             return null;
         } finally {
@@ -62,21 +65,21 @@ function processInput(event, setErrorMsg) {
 
 // ================================================================================================
 
-// Dependency of 'processInput' -- Validate the input -- Make sure it's formatted the way I allow it
+// Dependency of 'processInput' -- Validate the input -- Make sure it's formatted the way I allow it -- Returns boolean
 function checkValidInput(arr) {
-    if (!Array.isArray(arr)) return;
     let passed = true;
+    if (!Array.isArray(arr)) return (passed = false);
 
     arr.forEach((noteObj) => {
-        if (!noteObj.hasOwnProperty("dateInput")) return (passed = false);
-        if (!noteObj.hasOwnProperty("id")) return (passed = false);
+        if (!noteObj.hasOwnProperty("dateInput") && !noteObj.hasOwnProperty("dateFromInput")) return (passed = false); // If the object lacks both dateInput and dateFromInput, passed becomes false
+        if (!noteObj.hasOwnProperty("id") && !noteObj.hasOwnProperty("noteId")) return (passed = false);
         if (!noteObj.hasOwnProperty("keywords")) return (passed = false);
         if (!noteObj.hasOwnProperty("note")) return (passed = false);
         if (!noteObj.hasOwnProperty("time")) return (passed = false);
         if (!noteObj.hasOwnProperty("title")) return (passed = false);
 
-        if (typeof noteObj.dateInput !== "string") return (passed = false);
-        if (typeof noteObj.id !== "number") return (passed = false);
+        if (typeof noteObj.dateInput !== "string" && typeof noteObj.dateFromInput !== "string") return (passed = false);
+        if (typeof noteObj.id !== "number" && typeof noteObj.noteId !== "number") return (passed = false);
         if (typeof noteObj.keywords !== "string" && !Array.isArray(noteObj.keywords)) return (passed = false);
         if (typeof noteObj.note !== "string") return (passed = false);
         if (typeof noteObj.time !== "string") return (passed = false);
@@ -89,26 +92,40 @@ function checkValidInput(arr) {
 // ================================================================================================
 
 // Dependency of 'processInput' --- The import was successful, now add to the state and push to LS
-function addFromImported(arr) {
-    const stateNotesIds = Logic.getStateNotes().map((noteObj) => noteObj.id);
+function addFromImported(importedArr, currentNotes) {
+    console.log(importedArr);
+    console.log(currentNotes);
+    // Get only note IDs
+    const stateNotesIds = currentNotes.map((noteObj) => noteObj.id);
+
+    // Deep-copy currentNotes
+    const currentNotesCopy = JSON.parse(JSON.stringify(currentNotes));
 
     // Change state
-    arr.forEach((noteObj) => {
-        if (stateNotesIds.includes(noteObj.id)) {
-            // state already has this note, so I replace it --> replace in it what can be changed: dateInput, keywords, note, title.
-            const indexInState = Logic.getStateNotes().findIndex((stateNote) => stateNote.id === noteObj.id);
-            Logic.getStateNotes()[indexInState].dateInput = noteObj.dateInput;
-            Logic.getStateNotes()[indexInState].note = noteObj.note;
-            Logic.getStateNotes()[indexInState].title = noteObj.title;
-            Logic.getStateNotes()[indexInState].keywords = noteObj.keywords;
+    importedArr.forEach((noteObj) => {
+        if (stateNotesIds.includes(noteObj.id) || stateNotesIds.includes(noteObj.noteId)) {
+            // Case here: state already has this note, so I replace it --> replace what can be changed: dateInput/dateFromInput, keywords, note, title.
+            const indexInState = currentNotes.findIndex(
+                (stateNote) => stateNote.id === noteObj.id || stateNote.noteId === noteObj.noteId
+            );
+            if (currentNotesCopy[indexInState].dateInput && noteObj.dateInput) {
+                currentNotesCopy[indexInState].dateInput = noteObj.dateInput;
+            } else {
+                currentNotesCopy[indexInState].dateFromInput = noteObj.dateFromInput;
+            }
+            currentNotesCopy[indexInState].note = noteObj.note;
+            currentNotesCopy[indexInState].title = noteObj.title;
+            currentNotesCopy[indexInState].keywords = noteObj.keywords;
         } else {
-            // state doesn't have this note, so I just push it
-            Logic.getStateNotes().push(noteObj);
+            // Case here: state doesn't have this note, so I just push it
+            currentNotesCopy.push(noteObj);
         }
     });
 
+    console.log(currentNotesCopy);
+
     // Push to LS
-    Logic.saveNotesToLS();
+    // saveNotesToLS();
 }
 
 // ================================================================================================
