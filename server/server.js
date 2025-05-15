@@ -6,7 +6,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 // const cookieParser = require("cookie-parser");
 // const fs = require("fs");
-// const path = require("path");
+const path = require("path");
 const notesRouter = require("./routes/notes");
 const importer = require("./controllers/importController");
 
@@ -40,10 +40,21 @@ mongoose
     .then(() => console.log(`✅ db connected`))
     .catch(() => console.log(`🔴 db not connected`));
 
-// Start server
-const port = process.env.PORT || 8000;
-app.listen(port, () => console.log(`Server is listening on port ${port}`));
-
 // App Routes
 app.use("/notes", notesRouter); // create, read, update, and delete notes
 app.post("/import", importer); // import notes
+
+// Serve static assets if in prod
+if (process.env.NODE_ENV === "production") {
+    // Set static folder
+    app.use(express.static(path.join(__dirname, "..", "client", "dist")));
+
+    app.get("*", (req, res) => {
+        // Catch anything routes missed
+        res.sendFile(path.resolve(__dirname, "..", "client", "dist", "index.html"));
+    });
+}
+
+// Start server
+const port = process.env.PORT || 8000;
+app.listen(port, () => console.log(`Server is listening on port ${port}`));
