@@ -7,12 +7,13 @@ const Search = () => {
         useContext(MyContext);
 
     const submitSearchForm = (e) => {
+        // On submitting search form
         e.preventDefault();
-        console.log(`submitSearchForm`);
         setIsSearching(true);
     };
 
     useEffect(() => {
+        // If search term is '', there is no searching or filtering, all is brought back
         if (searchTerm === "") {
             setIsSearching(false);
             setIsFiltering(false);
@@ -21,6 +22,7 @@ const Search = () => {
     }, [searchTerm]);
 
     useEffect(() => {
+        // If filter keyword exists, it must be shown in the input
         if (filterKeyword !== "") setSearchTerm(`keyword:${filterKeyword}`);
     }, [filterKeyword]);
 
@@ -40,5 +42,3 @@ const Search = () => {
 };
 
 export default Search;
-
-// .search   style="display: block; transition: opacity 0.3s ease 0s; opacity: 1;"

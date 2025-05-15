@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import formatDate from "../utils/formatDate";
 
 const FormField = ({ fieldType, type, value, valueSetter }) => {
-    const [labelMoved, setLabelMoved] = useState(type === "date" ? true : false); // label is moved up or not;   date label is prefilled so it is moved by default
+    const [labelMoved, setLabelMoved] = useState(type === "date" ? true : false); // is label moved up or not?   date label is pre-filled so it is moved up by default
 
     useEffect(() => {
-        if (value !== "") setLabelMoved(true); // if input value changes and is not '', its label moves up
+        // If input value changes and is not '', its label moves up and stays there
+        if (value !== "") setLabelMoved(true);
         else setLabelMoved(false);
     }, [value]);
 
     let element = "";
 
-    // define 'tabIndex' value
+    // Define 'tabIndex' value for inputs
     let tabIndexNum;
     switch (type) {
         case "date":
@@ -30,10 +31,10 @@ const FormField = ({ fieldType, type, value, valueSetter }) => {
             break;
     }
 
-    // capitalise first letter
+    // Capitalise first letter
     const capitalise = (string) => string[0].toUpperCase() + string.slice(1).toLowerCase();
 
-    // label element
+    // Get label element
     const labelEl = (
         <label className={`journal__form-input-label ${labelMoved ? "moved-up" : ""}`}>
             {capitalise(type)}
@@ -41,7 +42,7 @@ const FormField = ({ fieldType, type, value, valueSetter }) => {
         </label>
     );
 
-    // it can be either input or textarea
+    // It can be either input or textarea
     if (fieldType === "input") {
         element = (
             <>
@@ -53,7 +54,7 @@ const FormField = ({ fieldType, type, value, valueSetter }) => {
                     autoComplete="off"
                     value={value}
                     onChange={valueSetter}
-                    required={type === "keywords" ? false : true}
+                    required={type === "keywords" || type === "title" ? false : true}
                     title={
                         type === "date"
                             ? `Today is ${formatDate(new Date())}`

@@ -56,7 +56,7 @@ async function getAllNotes(req, res, next) {
 
         // Get all notes belonging to userIdentifier
         const allNotes = await Note.find({ userIdentifier: req.params.userIdentifier });
-        console.log(`user's notes in db:`, allNotes.length);
+        // console.log(`user's notes in db:`, allNotes.length);
 
         // Return them
         res.status(200).json({ message: allNotes });

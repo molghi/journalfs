@@ -1,16 +1,32 @@
+import axios from "axios";
+import { decode } from "he"; // Remove HTML entities when displaying
+import getAllNotes from "./getAllNotes";
+
+// ================================================================================================
+
 // Prompt and open the window to choose the file
 function importNotes(fileUploadInput) {
     alert(`NOTE:\n\nYou can import only JSON and it must be formatted exactly the same as what you can export.`);
 
     fileUploadInput.current.click(); // Click the file import btn
 
-    // Everything after that happens in the 'onChange' event listener --> 'processInput'
+    // Everything after that happens in the 'onChange' event listener --> 'processInput' here
 }
 
 // ================================================================================================
 
 // Upon file upload
-function processInput(event, setErrorMsg, notes) {
+function processInput(
+    event,
+    setErrorMsg,
+    notes,
+    baseUrl,
+    localStorageIDKey,
+    setIsLoading,
+    localStorageKey,
+    setNotes,
+    setNotificationMsg
+) {
     const file = event.target.files[0]; // Get the file
     if (!file) return; // Ensure there's a file selected
 
@@ -30,27 +46,18 @@ function processInput(event, setErrorMsg, notes) {
                 );
             }
 
-            // Add to the state and push to LS
-            addFromImported(jsonData, notes);
-
-            return console.log(`importing not finished yet`);
-
-            // Visual.showMessage("success", `Import successful! Notes added: ${jsonData.length}`, undefined, "bottom");
-
-            // if (!Visual.allEntriesSection.classList.contains("hidden")) {
-            //     // means I am viewing all notes now and they must be updated (re-rendered)
-            //     const updatedNotes = Logic.getStateNotes();
-            //     const allNoteTitles = updatedNotes.map((noteObj) => noteObj.title);
-            //     const allNoteIds = updatedNotes.map((noteObj) => noteObj.id);
-            //     const allContentIds = updatedNotes.map((noteObj) => noteObj.note.slice(0, 50));
-            //     Visual.renderEntriesBrowser(allNoteTitles, allNoteIds, allContentIds); // Render all miniatures
-            //     Visual.clearAllNotes();
-            //     updatedNotes.forEach((noteObj) => Visual.renderNote(noteObj)); // Render all notes
-            //     const notesNumber = updatedNotes.length;
-            //     Visual.updateSearchPlaceholder(notesNumber); // Update the placeholder (search form) to show how many notes there are
-            //     document.querySelector(".all-entries__box").classList.remove("hidden");
-            //     if (jsonData.length > 1) document.querySelector(".search").classList.remove("hidden");
-            // }
+            // Add to db, after which get all and save to LS
+            addFromImported(
+                jsonData,
+                notes,
+                baseUrl,
+                localStorageIDKey,
+                setIsLoading,
+                localStorageKey,
+                setNotes,
+                setNotificationMsg,
+                setErrorMsg
+            );
         } catch (err) {
             console.error("Invalid input file", err);
             setErrorMsg(`Invalid input file! You can import only JSON and it must be formatted the same as what you can export.`);
@@ -68,6 +75,7 @@ function processInput(event, setErrorMsg, notes) {
 // Dependency of 'processInput' -- Validate the input -- Make sure it's formatted the way I allow it -- Returns boolean
 function checkValidInput(arr) {
     let passed = true;
+
     if (!Array.isArray(arr)) return (passed = false);
 
     arr.forEach((noteObj) => {
@@ -91,41 +99,74 @@ function checkValidInput(arr) {
 
 // ================================================================================================
 
-// Dependency of 'processInput' --- The import was successful, now add to the state and push to LS
-function addFromImported(importedArr, currentNotes) {
-    console.log(importedArr);
-    console.log(currentNotes);
+// Dependency of 'processInput' --- The import was successful, now add to the state/db and save to LS
+async function addFromImported(
+    importedArr,
+    currentNotes,
+    baseUrl,
+    localStorageIDKey,
+    setIsLoading,
+    localStorageKey,
+    setNotes,
+    setNotificationMsg,
+    setErrorMsg
+) {
     // Get only note IDs
     const stateNotesIds = currentNotes.map((noteObj) => noteObj.id);
 
-    // Deep-copy currentNotes
+    // Deep-copy currentNotes (current state)
     const currentNotesCopy = JSON.parse(JSON.stringify(currentNotes));
 
-    // Change state
+    // Generate new notes that would be sent to db
     importedArr.forEach((noteObj) => {
-        if (stateNotesIds.includes(noteObj.id) || stateNotesIds.includes(noteObj.noteId)) {
-            // Case here: state already has this note, so I replace it --> replace what can be changed: dateInput/dateFromInput, keywords, note, title.
-            const indexInState = currentNotes.findIndex(
-                (stateNote) => stateNote.id === noteObj.id || stateNote.noteId === noteObj.noteId
-            );
-            if (currentNotesCopy[indexInState].dateInput && noteObj.dateInput) {
-                currentNotesCopy[indexInState].dateInput = noteObj.dateInput;
-            } else {
-                currentNotesCopy[indexInState].dateFromInput = noteObj.dateFromInput;
+        if (stateNotesIds.includes(noteObj.id)) {
+            // Case here: state already has this note, so I replace it --> replace what can be changed: dateInput, keywords, note, title.
+            const indexInState = currentNotes.findIndex((stateNote) => stateNote.id === noteObj.id);
+            if (noteObj.dateInput.trim()) {
+                currentNotesCopy[indexInState].dateInput = noteObj.dateInput.trim();
             }
-            currentNotesCopy[indexInState].note = noteObj.note;
-            currentNotesCopy[indexInState].title = noteObj.title;
-            currentNotesCopy[indexInState].keywords = noteObj.keywords;
+            if (noteObj.note.trim()) {
+                currentNotesCopy[indexInState].note = noteObj.note.trim();
+            }
+            if (noteObj.title.trim()) {
+                currentNotesCopy[indexInState].title = noteObj.title.trim();
+            }
+            currentNotesCopy[indexInState].keywords = noteObj.keywords.trim();
         } else {
             // Case here: state doesn't have this note, so I just push it
             currentNotesCopy.push(noteObj);
         }
     });
 
-    console.log(currentNotesCopy);
+    // Get the final formatted version to send request with
+    const finalVersion = currentNotesCopy.map((noteObj) => {
+        delete noteObj.__v; // Delete fields that will be auto created by Mongo
+        delete noteObj._id;
+        delete noteObj.userIdentifier;
+        noteObj.dateCreated = decode(noteObj.dateCreated); // Decode here to encode only once on the backend
+        noteObj.dateInput = decode(noteObj.dateInput);
+        noteObj.dateModified = decode(noteObj.dateModified);
+        noteObj.keywords = decode(noteObj.keywords);
+        noteObj.note = decode(noteObj.note);
+        noteObj.time = decode(noteObj.time);
+        noteObj.title = decode(noteObj.title);
+        return noteObj;
+    });
 
-    // Push to LS
-    // saveNotesToLS();
+    // Send request to import to db
+    const userIdentifierFromLS = localStorage.getItem(localStorageIDKey);
+    const resp = await axios.post(`${baseUrl}/import`, { notes: finalVersion, userIdentifier: userIdentifierFromLS });
+
+    // Check response
+    if (resp.status === 200) {
+        getAllNotes(setIsLoading, localStorageIDKey, localStorageKey, baseUrl, setNotes);
+        setNotificationMsg("Import successful ✅");
+        console.log("Import successful ✅");
+    } else {
+        setErrorMsg(
+            "Import failed 🚫 Make sure the JSON you import is formatted exactly the same as what you can export, or try again later."
+        );
+    }
 }
 
 // ================================================================================================

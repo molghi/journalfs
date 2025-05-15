@@ -3,6 +3,11 @@ import MyContext from "../context/MyContext";
 
 const EntriesMiniature = ({ title, note, keywords, id, name, onClick }) => {
     const { searchTerm, isSearching, isFiltering, filterKeyword } = useContext(MyContext);
+
+    // ========================================================================
+
+    // Define if it should be shown or not
+
     let viewFlag = true;
 
     const titleHasSearchTerm = title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -21,6 +26,8 @@ const EntriesMiniature = ({ title, note, keywords, id, name, onClick }) => {
             : keywords.join(" ").toLowerCase().includes(filterKeyword.toLowerCase());
 
     if (isFiltering && !keywordsHaveFilterTerm) viewFlag = false;
+
+    // ========================================================================
 
     return (
         viewFlag && (

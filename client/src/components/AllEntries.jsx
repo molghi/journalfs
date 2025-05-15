@@ -8,7 +8,7 @@ import filterNotes from "../utils/filterNotes";
 const AllEntries = () => {
     const { notes, searchTerm, isSearching } = useContext(MyContext);
     let notesMatchSearch;
-    if (isSearching) notesMatchSearch = filterNotes(notes, searchTerm); // how many notes match the search term
+    if (isSearching) notesMatchSearch = filterNotes(notes, searchTerm); // Get how many notes match the search term
 
     return (
         <>

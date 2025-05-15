@@ -5,11 +5,9 @@ import BottomActions from "./components/BottomActions";
 import Search from "./components/Search";
 import AllEntries from "./components/AllEntries";
 import MyContext from "./context/MyContext";
-// import testData from "./test-data.json";
-import { saveNotesToLS } from "./utils/localStorageFunctions";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
+import getAllNotes from "./utils/getAllNotes";
 // import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from "react-router-dom";
 // import MainLayout from "./layouts/MainLayout";
 
@@ -20,7 +18,6 @@ function App() {
         activeTab,
         errorMsg,
         setErrorMsg,
-        isLoading,
         setIsLoading,
         baseUrl,
         localStorageKey,
@@ -29,27 +26,10 @@ function App() {
         setNotificationMsg,
     } = useContext(MyContext);
 
-    // console.log(notes);
-
     useEffect(() => {
         if (activeTab === 0) return;
-        // Get all notes from db
-        const getAllNotes = async () => {
-            try {
-                setIsLoading(true);
-                const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-                const response = await axios.get(`${baseUrl}/notes/${userIdentifierInLS}`);
-                setIsLoading(false);
-                if (response.status === 200) {
-                    setNotes(response.data.message);
-                    saveNotesToLS(localStorageKey, response.data.message);
-                    console.log(`Read all: Response 200 ✅. Saved to LS.`);
-                }
-            } catch (error) {
-                console.error(`💥 Error getting notes:`, error);
-            }
-        };
-        getAllNotes();
+        // Get all notes from db if on 'View All'
+        getAllNotes(setIsLoading, localStorageIDKey, localStorageKey, baseUrl, setNotes);
     }, [activeTab]);
 
     useEffect(() => {
@@ -65,7 +45,7 @@ function App() {
     }, [errorMsg, notificationMsg]);
 
     useEffect(() => {
-        // Create some user identifier
+        // Create some user identifier to whom notes will belong
         const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
         console.log(`User Identifier in LS: ${userIdentifierInLS ? "exists" : "none"}`);
         if (userIdentifierInLS) return; // if exists, do not generate again

@@ -84,7 +84,7 @@ function exportNotesTxt(notes) {
 
 // ================================================================================================
 
-// Dependency of 'exportNotesTxt' -- Prepare notes to be exported as .txt -- Just to have it nicely formatted
+// Dependency of 'exportNotesTxt' -- Prepare notes to be exported as .txt -- Just to have them nicely formatted
 function prepareForExport(notes) {
     const data = notes; // get all notes here
 
@@ -92,19 +92,24 @@ function prepareForExport(notes) {
 
     const result = data.map((noteObj) => {
         const trueTime = new Date(noteObj.time);
+
         const trueDate = `${trueTime.getDate()}/${trueTime.getMonth() + 1}/${trueTime.getFullYear().toString().slice(2)}`;
+
         const keywords = !noteObj.keywords
             ? ""
             : !Array.isArray(noteObj.keywords)
             ? `Keywords: ${noteObj.keywords}\n\n`
             : `Keywords: ${noteObj.keywords.join(", ")}\n\n`;
+
         return `${noteObj.title}\n\n\n${noteObj.note.replaceAll("<br>", "\n")}\n\n\n${keywords}Date: ${
             noteObj.dateInput || noteObj.dateFromInput
         }  (${trueDate})\n\n\n${separator}\n\n\n`;
     });
 
-    const notesNum = result.length;
-    result.unshift(`Your Notes (${notesNum})\n\n\n`, separator + "\n\n\n");
+    const notesNumber = result.length;
+
+    result.unshift(`Your Notes (${notesNumber})\n\n\n`, separator + "\n\n\n");
+
     return result.join("");
 }
 

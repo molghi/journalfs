@@ -6,7 +6,7 @@ import EntriesNote from "./EntriesNote";
 // This is where the note entries are
 const EntriesNotes = () => {
     const { notes } = useContext(MyContext);
-    const scrollBoxEl = useRef();
+    const scrollBoxEl = useRef(); // Scrollable container
 
     return (
         <div ref={scrollBoxEl} className="all-entries__notes">

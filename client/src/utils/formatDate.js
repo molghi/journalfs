@@ -1,3 +1,5 @@
+// Format date
+
 const formatDate = (dateString) => {
     const formatter = new Intl.DateTimeFormat("en-GB", {
         year: "2-digit",

@@ -6,6 +6,7 @@ import MyContext from "../context/MyContext";
 const Header = () => {
     const { activeTab, setActiveTab, isLoading } = useContext(MyContext);
 
+    // Switch tabs
     const handleTabSwitch = (e) => {
         if (e.target.textContent === "Add New") setActiveTab(0);
         else if (e.target.textContent === "View All") setActiveTab(1);
@@ -13,7 +14,7 @@ const Header = () => {
 
     return (
         <div className="header">
-            <h1>Journal (dev mode)</h1>
+            <h1>Journal</h1>
             {isLoading && <div className="loading">Loading...</div>}
             <div className="header__nav">
                 <button onClick={handleTabSwitch} className={`header__btn header__btn--add ${activeTab === 0 ? "active" : ""}`}>

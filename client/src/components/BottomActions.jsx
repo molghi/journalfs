@@ -7,7 +7,18 @@ import { importNotes, processInput } from "../utils/importNotes";
 import MyContext from "../context/MyContext";
 
 const BottomActions = () => {
-    const { interfaceColor, setInterfaceColor, setErrorMsg, baseUrl, notes } = useContext(MyContext);
+    const {
+        interfaceColor,
+        setInterfaceColor,
+        setErrorMsg,
+        baseUrl,
+        notes,
+        localStorageIDKey,
+        setIsLoading,
+        localStorageKey,
+        setNotes,
+        setNotificationMsg,
+    } = useContext(MyContext);
     const [nowTime, setNowTime] = useState(new Date());
     const timer = useRef();
     const fileUploadInput = useRef();
@@ -41,7 +52,18 @@ const BottomActions = () => {
         if (e.target.textContent === "Import notes") importNotes(fileUploadInput); // Prompt and open the window to choose the file
     };
 
-    const handleFileUpload = (e) => processInput(e, setErrorMsg, notes); // Upon file upload
+    const handleFileUpload = (e) =>
+        processInput(
+            e,
+            setErrorMsg,
+            notes,
+            baseUrl,
+            localStorageIDKey,
+            setIsLoading,
+            localStorageKey,
+            setNotes,
+            setNotificationMsg
+        ); // Upon file upload
 
     const actions = [
         { visibleName: "Change color", titleAttr: "Change the accent color of the interface" },

@@ -4,12 +4,11 @@ require("dotenv").config();
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const cookieParser = require("cookie-parser");
-const fs = require("fs");
-const path = require("path");
+// const cookieParser = require("cookie-parser");
+// const fs = require("fs");
+// const path = require("path");
 const notesRouter = require("./routes/notes");
-// const exporter = require("./controllers/exportController");
-// const importer = require("./controllers/importController");
+const importer = require("./controllers/importController");
 
 // Init Express
 const app = express();
@@ -43,9 +42,8 @@ mongoose
 
 // Start server
 const port = process.env.PORT || 8000;
-app.listen(port, () => console.log(`Server is running... (${port})`));
+app.listen(port, () => console.log(`Server is listening on port ${port}`));
 
 // App Routes
-app.use("/notes", notesRouter);
-// app.post("/export", exporter);
-// app.post("/import", importer);
+app.use("/notes", notesRouter); // create, read, update, and delete notes
+app.post("/import", importer); // import notes

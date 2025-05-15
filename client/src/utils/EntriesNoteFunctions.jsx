@@ -73,7 +73,7 @@ const deleteNote = async (title, id, baseUrl, setNotes, localStorageKey, localSt
         // If returns success, update 'notes' in Context and change them in LS
         if (resp.data.message === "Note deleted successfully") {
             setNotes((prev) => {
-                const newNotes = prev.filter((note) => note.id !== resp.data.deletedItem.id);
+                const newNotes = prev.filter((note) => note.id !== resp.data.deletedItem.id); // filter out
                 saveNotesToLS(localStorageKey, newNotes); // save to LS
                 return newNotes;
             });
@@ -220,4 +220,48 @@ const formatNote = (note) => {
 
 // ================================================================================================
 
-export { filterByKeyword, editKeywords, deleteNote, editTitle, saveTitle, editNote, saveNote, formatNote };
+// Format keywords
+
+const formatKeywords = (keywordsString, setFilterKeyword, setIsFiltering) => {
+    if (typeof keywordsString === "string") {
+        // If string has commas, split and map
+        if (keywordsString.includes(",")) {
+            return keywordsString.split(",").map((word, index) => (
+                <button
+                    key={index}
+                    className="all-entries__note-keyword"
+                    title={`Filter by "${word.trim()}"`}
+                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+                >
+                    {word.trim()}
+                </button>
+            ));
+        }
+        // If string has no commas, it's a single keyword there
+        return (
+            <button
+                className="all-entries__note-keyword"
+                title={`Filter by "${keywordsString}"`}
+                onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+            >
+                {keywordsString}
+            </button>
+        );
+    } else {
+        // keywordsString aren't type string --> it is type array, so just map it
+        return keywordsString.map((word, index) => (
+            <button
+                key={index}
+                className="all-entries__note-keyword"
+                title={`Filter by "${word}"`}
+                onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
+            >
+                {word}
+            </button>
+        ));
+    }
+};
+
+// ================================================================================================
+
+export { filterByKeyword, editKeywords, deleteNote, editTitle, saveTitle, editNote, saveNote, formatNote, formatKeywords };

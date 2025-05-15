@@ -3,7 +3,6 @@ import React from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import MyContext from "../context/MyContext";
 import {
-    filterByKeyword,
     editKeywords,
     deleteNote,
     editTitle,
@@ -11,6 +10,7 @@ import {
     editNote,
     saveNote,
     formatNote,
+    formatKeywords,
 } from "../utils/EntriesNoteFunctions";
 import { decode } from "he"; // Remove HTML entities when displaying
 
@@ -41,11 +41,11 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
     const [editNoteValue, setEditNoteValue] = useState(note.replaceAll("<br>", "\n"));
     const [prevEditTitleValue, setPrevEditTitleValue] = useState("");
     const [prevEditNoteValue, setPrevEditNoteValue] = useState("");
-    const isLast = notes[notes.length - 1].id === id;
+    const isLast = notes[notes.length - 1].id === id; // Is this note the last one?
 
     // ============================================================================================================
 
-    // Set view flag
+    // Define if it should be shown or not
 
     let viewFlag = true;
     const titleHasSearchTerm = title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -67,50 +67,6 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
 
     // ============================================================================================================
 
-    // Format keywords
-
-    const formatKeywords = (keywordsString) => {
-        if (typeof keywords === "string") {
-            // If string has commas
-            if (keywords.includes(",")) {
-                return keywords.split(",").map((word, index) => (
-                    <button
-                        key={index}
-                        className="all-entries__note-keyword"
-                        title={`Filter by "${word.trim()}"`}
-                        onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
-                    >
-                        {word.trim()}
-                    </button>
-                ));
-            }
-            // If string has no commas
-            return (
-                <button
-                    className="all-entries__note-keyword"
-                    title={`Filter by "${keywords}"`}
-                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
-                >
-                    {keywords}
-                </button>
-            );
-        } else {
-            // keywords aren't type string
-            return keywords.map((word, index) => (
-                <button
-                    key={index}
-                    className="all-entries__note-keyword"
-                    title={`Filter by "${word}"`}
-                    onClick={(e) => filterByKeyword(e, setFilterKeyword, setIsFiltering)}
-                >
-                    {word}
-                </button>
-            ));
-        }
-    };
-
-    // ============================================================================================================
-
     // Replace slash entities with actual slashes
 
     const prettifyDate = (value) => (!value.includes("&#x2F;") ? value : value.replaceAll("&#x2F;", "/"));
@@ -119,10 +75,8 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
 
     // Convert "2025-05-13T03:18:55.702+00:00" to "13/5/25"
 
-    const formatDate = (value) => {
-        const date = new Date(value);
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`;
-    };
+    const formatDate = (value) =>
+        `${new Date(value).getDate()}/${new Date(value).getMonth() + 1}/${new Date(value).getFullYear().toString().slice(-2)}`;
 
     // ============================================================================================================
 
@@ -233,7 +187,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                             >
                                 Keywords:
                             </span>
-                            {formatKeywords(keywords)}
+                            {formatKeywords(keywords, setFilterKeyword, setIsFiltering)}
                         </div>
                         {/* DATE */}
                         <div
