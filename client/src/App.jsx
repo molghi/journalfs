@@ -47,7 +47,8 @@ function App() {
     useEffect(() => {
         // Create some user identifier to whom notes will belong
         const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-        console.log(`User Identifier in LS: ${userIdentifierInLS ? "exists" : "none"}`);
+        // BACK-END COMMENTED OUT
+        // console.log(`User Identifier in LS: ${userIdentifierInLS ? "exists" : "none"}`);
         if (userIdentifierInLS) return; // if exists, do not generate again
         localStorage.setItem(localStorageIDKey, uuidv4());
     }, []);

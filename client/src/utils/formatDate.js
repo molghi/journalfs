@@ -6,6 +6,7 @@ const formatDate = (dateString) => {
         month: "numeric",
         day: "numeric",
     });
+
     return formatter
         .format(dateString)
         .split("/")

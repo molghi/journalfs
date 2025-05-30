@@ -33,24 +33,37 @@ const editKeywords = async (keywords, setErrorMsg, baseUrl, id, setNotes, localS
         // Clear errors
         setErrorMsg("");
 
+        // BACK-END COMMENTED OUT
         // Send request to update keywords
-        const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-        const resp = await axios.patch(`${baseUrl}/notes/${id}`, { keywords: decode(input), userIdentifier: userIdentifierInLS });
+        // const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+        // const resp = await axios.patch(`${baseUrl}/notes/${id}`, { keywords: decode(input), userIdentifier: userIdentifierInLS });
 
         // If returns success, update 'notes' in Context and change them in LS
-        if (resp.data.status === "Note keywords updated successfully") {
-            setNotes((prev) => {
-                const newNotes = prev.map((note) => {
-                    if (note.id === resp.data.message.id) {
-                        return { ...note, keywords: resp.data.message.keywords, dateModified: resp.data.message.dateModified }; // spread and change its keywords and dateModified
-                    }
-                    return note;
-                });
-                saveNotesToLS(localStorageKey, newNotes); // save to LS
-                return newNotes;
+        // if (resp.data.status === "Note keywords updated successfully") {
+        //     setNotes((prev) => {
+        //         const newNotes = prev.map((note) => {
+        //             if (note.id === resp.data.message.id) {
+        //                 return { ...note, keywords: resp.data.message.keywords, dateModified: resp.data.message.dateModified }; // spread and change its keywords and dateModified
+        //             }
+        //             return note;
+        //         });
+        //         saveNotesToLS(localStorageKey, newNotes); // save to LS
+        //         return newNotes;
+        //     });
+        //     console.log(`Note keywords updated ✅. LS updated.`);
+        // }
+
+        // NON-BACK-END VERSION
+        setNotes((prev) => {
+            const newNotes = prev.map((note) => {
+                if (note.id === id) {
+                    return { ...note, keywords: decode(input), dateModified: Date.now() }; // spread and change its keywords and dateModified
+                }
+                return note;
             });
-            console.log(`Note keywords updated ✅. LS updated.`);
-        }
+            saveNotesToLS(localStorageKey, newNotes); // save to LS
+            return newNotes;
+        });
     } catch (error) {
         console.log(`💥 Error editing keywords`, error);
     }
@@ -66,19 +79,27 @@ const deleteNote = async (title, id, baseUrl, setNotes, localStorageKey, localSt
         const answer = window.confirm(`Are you sure you want to delete this note?\n\n${title}`);
         if (!answer) return;
 
+        // BACK-END COMMENTED OUT
         // Send request to delete
-        const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-        const resp = await axios.delete(`${baseUrl}/notes/${id}`, { data: { userIdentifier: userIdentifierInLS } });
+        // const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+        // const resp = await axios.delete(`${baseUrl}/notes/${id}`, { data: { userIdentifier: userIdentifierInLS } });
 
         // If returns success, update 'notes' in Context and change them in LS
-        if (resp.data.message === "Note deleted successfully") {
-            setNotes((prev) => {
-                const newNotes = prev.filter((note) => note.id !== resp.data.deletedItem.id); // filter out
-                saveNotesToLS(localStorageKey, newNotes); // save to LS
-                return newNotes;
-            });
-            console.log(`Note '${title}' deleted ✅. LS updated.`);
-        }
+        // if (resp.data.message === "Note deleted successfully") {
+        //     setNotes((prev) => {
+        //         const newNotes = prev.filter((note) => note.id !== resp.data.deletedItem.id); // filter out
+        //         saveNotesToLS(localStorageKey, newNotes); // save to LS
+        //         return newNotes;
+        //     });
+        //     console.log(`Note '${title}' deleted ✅. LS updated.`);
+        // }
+
+        // NON-BACK-END VERSION
+        setNotes((prev) => {
+            const newNotes = prev.filter((note) => note.id !== id); // filter out
+            saveNotesToLS(localStorageKey, newNotes); // save to LS
+            return newNotes;
+        });
     } catch (error) {
         console.log(`💥 Error deleting note`, error);
     }
@@ -114,27 +135,40 @@ const saveTitle = async (
         // If new value is the same as old value, just return
         if (prevEditTitleValue.trim() === decode(newTitle.trim())) return;
 
+        // BACK-END COMMENTED OUT
         // Send request to update title
-        const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-        const resp = await axios.patch(`${baseUrl}/notes/${id}`, {
-            title: decode(newTitle.trim()),
-            userIdentifier: userIdentifierInLS,
-        });
+        // const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+        // const resp = await axios.patch(`${baseUrl}/notes/${id}`, {
+        //     title: decode(newTitle.trim()),
+        //     userIdentifier: userIdentifierInLS,
+        // });
 
         // If returns success, update 'notes' in Context and change them in LS
-        if (resp.data.status === "Note title updated successfully") {
-            setNotes((prev) => {
-                const newNotes = prev.map((note) => {
-                    if (note.id === resp.data.message.id) {
-                        return { ...note, title: resp.data.message.title, dateModified: resp.data.message.dateModified }; // spread and change its title and dateModified
-                    }
-                    return note;
-                });
-                saveNotesToLS(localStorageKey, newNotes); // save to LS
-                return newNotes;
+        // if (resp.data.status === "Note title updated successfully") {
+        //     setNotes((prev) => {
+        //         const newNotes = prev.map((note) => {
+        //             if (note.id === resp.data.message.id) {
+        //                 return { ...note, title: resp.data.message.title, dateModified: resp.data.message.dateModified }; // spread and change its title and dateModified
+        //             }
+        //             return note;
+        //         });
+        //         saveNotesToLS(localStorageKey, newNotes); // save to LS
+        //         return newNotes;
+        //     });
+        //     console.log(`Note title updated ✅. LS updated.`);
+        // }
+
+        // NON-BACK-END VERSION
+        setNotes((prev) => {
+            const newNotes = prev.map((note) => {
+                if (note.id === id) {
+                    return { ...note, title: decode(newTitle.trim()), dateModified: Date.now() }; // spread and change its title and dateModified
+                }
+                return note;
             });
-            console.log(`Note title updated ✅. LS updated.`);
-        }
+            saveNotesToLS(localStorageKey, newNotes); // save to LS
+            return newNotes;
+        });
     } catch (error) {
         console.log(`💥 Error saving note title`, error);
     }
@@ -177,24 +211,37 @@ const saveNote = async (
         // If new value is the same as old value, just return
         if (prevEditNoteValue.trim() === decode(newNote).trim()) return;
 
+        // BACK-END COMMENTED OUT
         // Send request to update note body
-        const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-        const resp = await axios.patch(`${baseUrl}/notes/${id}`, { note: decode(newNote), userIdentifier: userIdentifierInLS });
+        // const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+        // const resp = await axios.patch(`${baseUrl}/notes/${id}`, { note: decode(newNote), userIdentifier: userIdentifierInLS });
 
         // If returns success, update 'notes' in Context and change them in LS
-        if (resp.data.status === "Note body updated successfully") {
-            setNotes((prev) => {
-                const newNotes = prev.map((note) => {
-                    if (note.id === resp.data.message.id) {
-                        return { ...note, note: resp.data.message.note, dateModified: resp.data.message.dateModified }; // spread and change note body and dateModified
-                    }
-                    return note;
-                });
-                saveNotesToLS(localStorageKey, newNotes); // save to LS
-                return newNotes;
+        // if (resp.data.status === "Note body updated successfully") {
+        //     setNotes((prev) => {
+        //         const newNotes = prev.map((note) => {
+        //             if (note.id === resp.data.message.id) {
+        //                 return { ...note, note: resp.data.message.note, dateModified: resp.data.message.dateModified }; // spread and change note body and dateModified
+        //             }
+        //             return note;
+        //         });
+        //         saveNotesToLS(localStorageKey, newNotes); // save to LS
+        //         return newNotes;
+        //     });
+        //     console.log(`Note body updated ✅. LS updated.`);
+        // }
+
+        // NON-BACK-END VERSION
+        setNotes((prev) => {
+            const newNotes = prev.map((note) => {
+                if (note.id === id) {
+                    return { ...note, note: decode(newNote), dateModified: Date.now() }; // spread and change note body and dateModified
+                }
+                return note;
             });
-            console.log(`Note body updated ✅. LS updated.`);
-        }
+            saveNotesToLS(localStorageKey, newNotes); // save to LS
+            return newNotes;
+        });
     } catch (error) {
         console.log(`💥 Error saving note body`, error);
     }
@@ -237,6 +284,7 @@ const formatKeywords = (keywordsString, setFilterKeyword, setIsFiltering) => {
                 </button>
             ));
         }
+
         // If string has no commas, it's a single keyword there
         return (
             <button

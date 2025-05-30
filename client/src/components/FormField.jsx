@@ -10,6 +10,7 @@ const FormField = ({ fieldType, type, value, valueSetter }) => {
         else setLabelMoved(false);
     }, [value]);
 
+    // What to return
     let element = "";
 
     // Define 'tabIndex' value for inputs

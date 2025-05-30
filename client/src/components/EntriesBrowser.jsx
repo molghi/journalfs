@@ -3,11 +3,11 @@ import { useContext } from "react";
 import MyContext from "../context/MyContext";
 import EntriesMiniature from "./EntriesMiniature";
 
-// This renders just the miniatures container, the left sidebar
+// Renders just the miniatures container, the left sidebar
 const EntriesBrowser = ({ notesMatchSearch }) => {
     const { notes, setNoteToScrollTo } = useContext(MyContext);
 
-    // Format for the title attr
+    // Format note for the title attr
     const getTitleAttr = (noteObj) => {
         const title = `${noteObj.title.slice(0, 50)}`;
         const note = `${noteObj.note.replaceAll("<br>", "").slice(0, 50)}`;

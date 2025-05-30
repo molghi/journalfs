@@ -1,4 +1,5 @@
 // Get how many notes match the search term -- Returns number
+
 function filterNotes(notes, searchTerm) {
     return notes.filter((noteObj) => {
         const titleHasSearchTerm = noteObj.title.toLowerCase().includes(searchTerm.toLowerCase());

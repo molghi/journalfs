@@ -1,6 +1,5 @@
 const validator = require("validator");
 const Note = require("../models/Note");
-const DOMPurify = require("dompurify");
 
 // ================================================================================================
 
@@ -81,7 +80,7 @@ async function deleteNote(req, res, next) {
         if (!isCleanNumber) return res.status(400).json({ message: "Incorrect note id" });
 
         // Query db to delete
-        const resp = await Note.findOneAndDelete({ id: idCleaned, userIdentifier: req.body.userIdentifier });
+        const resp = await Note.findOneAndDelete({ id: +idCleaned, userIdentifier: req.body.userIdentifier });
 
         res.status(200).json({ deletedItem: resp, message: "Note deleted successfully" });
     } catch (error) {
@@ -101,7 +100,7 @@ async function updateNote(req, res, next) {
         if (req.body.title) return updateNoteTitle(req, res, next);
         if (req.body.note) return updateNoteBody(req, res, next);
         if (req.body.keywords) return updateNoteKeywords(req, res, next);
-        // res.status(200).json({ message: "Updated successfully" });
+        res.status(400).json({ message: "Nothing to update with (no title, no note, no keywords)" });
     } catch (error) {
         console.error(`💥 `, error);
         res.status(500).json({ message: "Error updating note" });
@@ -128,7 +127,7 @@ async function updateNoteTitle(req, res, next) {
         // Return it
         res.status(200).json({ status: "Note title updated successfully", message: resp });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: "Error updating note title" });
     }
 }
@@ -153,7 +152,7 @@ async function updateNoteBody(req, res, next) {
         // Return it
         res.status(200).json({ status: "Note body updated successfully", message: resp });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: "Error updating note body" });
     }
 }
@@ -178,7 +177,7 @@ async function updateNoteKeywords(req, res, next) {
         // Return it
         res.status(200).json({ status: "Note keywords updated successfully", message: resp });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: "Error updating note keywords" });
     }
 }

@@ -15,7 +15,9 @@ const Header = () => {
     return (
         <div className="header">
             <h1>Journal</h1>
+
             {isLoading && <div className="loading">Loading...</div>}
+
             <div className="header__nav">
                 <button onClick={handleTabSwitch} className={`header__btn header__btn--add ${activeTab === 0 ? "active" : ""}`}>
                     Add New

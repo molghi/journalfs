@@ -33,29 +33,51 @@ const Form = () => {
             // Note can have all sorts of characters
             setErrorMsg("");
 
+            // BACK-END COMMENTED OUT
             // Send a request to create a new note
-            const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
-            const response = await axios.post(`${baseUrl}/notes`, {
-                date,
-                keywords,
-                title: title || "Journal Entry",
-                note,
-                userIdentifier: userIdentifierInLS,
-            });
-
+            // const userIdentifierInLS = localStorage.getItem(localStorageIDKey);
+            // const response = await axios.post(`${baseUrl}/notes`, {
+            //     date,
+            //     keywords,
+            //     title: title || "Journal Entry",
+            //     note,
+            //     userIdentifier: userIdentifierInLS,
+            // });
             // If returns successful, update state
-            if (response.status === 200) {
-                setNotes((prev) => [...prev, response.data.message]);
-                saveNotesToLS(localStorageKey, notes);
-                setDate(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear().toString().slice(-2)}`);
-                setKeywords("");
-                setTitle("");
-                setNote("");
-                setNotificationMsg("Note submitted!");
-                console.log(`Add one: Response 200 ✅. Saved to LS. Fields emptied.`);
-            } else {
-                setErrorMsg("Note creation failed");
-            }
+            // if (response.status === 200) {
+            //     setNotes((prev) => [...prev, response.data.message]);
+            //     saveNotesToLS(localStorageKey, notes);
+            //     setDate(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear().toString().slice(-2)}`);
+            //     setKeywords("");
+            //     setTitle("");
+            //     setNote("");
+            //     setNotificationMsg("Note submitted!");
+            //     console.log(`Add one: Response 200 ✅. Saved to LS. Fields emptied.`);
+            // } else {
+            //     setErrorMsg("Note creation failed");
+            // }
+
+            // NON-BACK-END VERSION
+            setNotes((prev) => {
+                const newNotes = [
+                    ...prev,
+                    {
+                        dateInput: date,
+                        keywords,
+                        title: title || "Journal Entry",
+                        note,
+                        id: Date.now(),
+                        time: new Date().toISOString(),
+                    },
+                ];
+                saveNotesToLS(localStorageKey, newNotes);
+                return newNotes;
+            });
+            setDate(`${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear().toString().slice(-2)}`);
+            setKeywords("");
+            setTitle("");
+            setNote("");
+            setNotificationMsg("Note submitted!");
         } catch (error) {
             console.error(`💥 Error adding note:`, error);
         }
@@ -71,6 +93,7 @@ const Form = () => {
                     <div className="journal__form-input-box">
                         <FormField fieldType="input" type="date" value={date} valueSetter={(e) => setDate(e.target.value)} />
                     </div>
+
                     {/* KEYWORDS FIELD */}
                     <div className="journal__form-input-box">
                         <FormField
@@ -81,21 +104,25 @@ const Form = () => {
                         />
                     </div>
                 </div>
+
                 <div className="journal__form-row">
                     {/* TITLE FIELD */}
                     <div className="journal__form-input-box">
                         <FormField fieldType="input" type="title" value={title} valueSetter={(e) => setTitle(e.target.value)} />
                     </div>
                 </div>
+
                 <div className="journal__form-row">
                     {/* NOTE FIELD */}
                     <div className="journal__form-input-box">
                         <FormField fieldType="textarea" type="note" value={note} valueSetter={(e) => setNote(e.target.value)} />
                     </div>
                 </div>
+
                 <div className="journal__form-row">
+                    {/* SUBMIT BTN */}
                     <div className="journal__form-btns">
-                        <button className="journal__form-btn" type="submit" title="Or press Command/Control + Enter">
+                        <button className="journal__form-btn" type="submit" /* title="Or press Command/Control + Enter" */>
                             Submit
                         </button>
                     </div>

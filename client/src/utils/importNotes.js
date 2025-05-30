@@ -1,5 +1,6 @@
 import axios from "axios";
 import { decode } from "he"; // Remove HTML entities when displaying
+import { saveNotesToLS } from "../utils/localStorageFunctions";
 import getAllNotes from "./getAllNotes";
 
 // ================================================================================================
@@ -131,42 +132,53 @@ async function addFromImported(
             if (noteObj.title.trim()) {
                 currentNotesCopy[indexInState].title = noteObj.title.trim();
             }
-            currentNotesCopy[indexInState].keywords = noteObj.keywords.trim();
+            const keywords = typeof noteObj.keywords === "string" ? noteObj.keywords : noteObj.keywords.join();
+            currentNotesCopy[indexInState].keywords = keywords.trim();
         } else {
             // Case here: state doesn't have this note, so I just push it
             currentNotesCopy.push(noteObj);
         }
     });
 
+    // BACK-END COMMENTED OUT
     // Get the final formatted version to send request with
-    const finalVersion = currentNotesCopy.map((noteObj) => {
-        delete noteObj.__v; // Delete fields that will be auto created by Mongo
-        delete noteObj._id;
-        delete noteObj.userIdentifier;
-        noteObj.dateCreated = decode(noteObj.dateCreated); // Decode here to encode only once on the backend
-        noteObj.dateInput = decode(noteObj.dateInput);
-        noteObj.dateModified = decode(noteObj.dateModified);
-        noteObj.keywords = decode(noteObj.keywords);
-        noteObj.note = decode(noteObj.note);
-        noteObj.time = decode(noteObj.time);
-        noteObj.title = decode(noteObj.title);
-        return noteObj;
-    });
+    // const finalVersion = currentNotesCopy.map((noteObj) => {
+    //     delete noteObj.__v; // Delete fields that will be auto created by Mongo
+    //     delete noteObj._id;
+    //     delete noteObj.userIdentifier;
+    //     noteObj.dateCreated = decode(noteObj.dateCreated); // Decode here to encode only once on the backend
+    //     noteObj.dateInput = decode(noteObj.dateInput);
+    //     noteObj.dateModified = decode(noteObj.dateModified);
+    //     noteObj.keywords = decode(noteObj.keywords);
+    //     noteObj.note = decode(noteObj.note);
+    //     noteObj.time = decode(noteObj.time);
+    //     noteObj.title = decode(noteObj.title);
+    //     return noteObj;
+    // });
 
     // Send request to import to db
-    const userIdentifierFromLS = localStorage.getItem(localStorageIDKey);
-    const resp = await axios.post(`${baseUrl}/import`, { notes: finalVersion, userIdentifier: userIdentifierFromLS });
+    // const userIdentifierFromLS = localStorage.getItem(localStorageIDKey);
+    // const resp = await axios.post(`${baseUrl}/import`, { notes: finalVersion, userIdentifier: userIdentifierFromLS });
 
     // Check response
-    if (resp.status === 200) {
-        getAllNotes(setIsLoading, localStorageIDKey, localStorageKey, baseUrl, setNotes);
-        setNotificationMsg("Import successful ✅");
-        console.log("Import successful ✅");
-    } else {
-        setErrorMsg(
-            "Import failed 🚫 Make sure the JSON you import is formatted exactly the same as what you can export, or try again later."
-        );
-    }
+    // if (resp.status === 200) {
+    //     getAllNotes(setIsLoading, localStorageIDKey, localStorageKey, baseUrl, setNotes);
+    //     setNotificationMsg("Import successful ✅");
+    //     console.log("Import successful ✅");
+    // } else {
+    //     setErrorMsg(
+    //         "Import failed 🚫 Make sure the JSON you import is formatted exactly the same as what you can export, or try again later."
+    //     );
+    // }
+
+    // NON-BACK-END VERSION
+    setNotes((prev) => {
+        let newNotes = [...currentNotesCopy];
+        saveNotesToLS(localStorageKey, newNotes);
+        return newNotes;
+    });
+    setNotificationMsg(`Import: ${currentNotesCopy.length} notes: successful ✅`);
+    console.log(`Import: ${currentNotesCopy.length} notes: successful ✅`);
 }
 
 // ================================================================================================

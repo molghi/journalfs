@@ -19,6 +19,7 @@ const BottomActions = () => {
         setNotes,
         setNotificationMsg,
     } = useContext(MyContext);
+
     const [nowTime, setNowTime] = useState(new Date());
     const timer = useRef();
     const fileUploadInput = useRef();
@@ -82,6 +83,7 @@ const BottomActions = () => {
                         <path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"></path>
                     </svg>
                 </div>
+
                 {/* ACTIONS MENU */}
                 <div className="actions-menu">
                     {actions.map((action, i) => (
@@ -92,6 +94,7 @@ const BottomActions = () => {
                     <input className="importer" type="file" ref={fileUploadInput} onChange={handleFileUpload} />
                 </div>
             </div>
+
             {/* DATE-TIME ELEMENT */}
             <div className="date-time">
                 <div

@@ -6,14 +6,14 @@ const Search = () => {
     const { searchTerm, setSearchTerm, notes, setIsSearching, setIsFiltering, filterKeyword, setFilterKeyword } =
         useContext(MyContext);
 
+    // Submit search form
     const submitSearchForm = (e) => {
-        // On submitting search form
         e.preventDefault();
         setIsSearching(true);
     };
 
     useEffect(() => {
-        // If search term is '', there is no searching or filtering, all is brought back
+        // If search term is '', there is no searching or filtering, bring all back
         if (searchTerm === "") {
             setIsSearching(false);
             setIsFiltering(false);
@@ -22,7 +22,7 @@ const Search = () => {
     }, [searchTerm]);
 
     useEffect(() => {
-        // If filter keyword exists, it must be shown in the input
+        // If filter keyword exists, show it in the input
         if (filterKeyword !== "") setSearchTerm(`keyword:${filterKeyword}`);
     }, [filterKeyword]);
 

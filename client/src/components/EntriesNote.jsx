@@ -32,7 +32,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
         notes,
     } = useContext(MyContext);
 
-    const theElement = useRef();
+    const theElement = useRef(); // Top wrapper element
     const titleInEdit = useRef();
     const noteInEdit = useRef();
     const [editingTitle, setEditingTitle] = useState(false);
@@ -45,7 +45,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
 
     // ============================================================================================================
 
-    // Define if it should be shown or not
+    // Define show it or not
 
     let viewFlag = true;
     const titleHasSearchTerm = title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -142,6 +142,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                             )}
                         </div>
                     </div>
+
                     <div className="all-entries__note-row">
                         {/* NOTE TEXT/BODY */}
                         <div
@@ -176,6 +177,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                             )}
                         </div>
                     </div>
+
                     <div className="all-entries__note-row">
                         {/* KEYWORDS */}
                         <div className="all-entries__note-keywords">
@@ -199,6 +201,7 @@ const EntriesNote = ({ id, title, note, keywords, date, scrollBoxRef, dateModifi
                             Date: {prettifyDate(date)}
                         </div>
                     </div>
+
                     {/* DELETE BUTTON */}
                     <div
                         className="all-entries__note-button"

@@ -12,7 +12,7 @@ const noteSchema = new mongoose.Schema({
 
     id: { type: Number, default: Date.now }, // =id
 
-    time: { type: Date, default: new Date().toISOString() }, // =time
+    time: { type: String, default: new Date().toISOString() }, // =time
 
     dateCreated: { type: Date, default: Date.now }, // =dateCreated
 
